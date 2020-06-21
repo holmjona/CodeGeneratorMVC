@@ -11,10 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using System.ComponentModel;
-using IRICommonObjects.Words;
 
 [Serializable()]
-public class ClassVariable : INotifyPropertyChanged {
+public class ClassVariable  {
     private int _ID;
     private string _name;
     private DataType _parameterType;
@@ -103,7 +102,7 @@ public class ClassVariable : INotifyPropertyChanged {
         _IsInteger = false;
         _IsDouble = false;
         if (_parameterType != null) {
-            switch (_parameterType.Name.ToLower()) {
+            switch (_parameterType.Name().ToLower()) {
                 case "string": {
                         // textbox
                         // _defaultHTMLName = "txt" & Name
@@ -387,18 +386,18 @@ public class ClassVariable : INotifyPropertyChanged {
             return this == (ClassVariable)obj;
         return false;
     }
-    public new static bool operator ==(ClassVariable pv1, ClassVariable pv2) {
+    public static bool operator ==(ClassVariable pv1, ClassVariable pv2) {
         if (pv1 == null & pv2 == null)
             return true;
         if (pv1 == null || pv2 == null)
             return false;
         return pv1.ID == pv2.ID;
     }
-    public new static bool operator !=(ClassVariable pv1, ClassVariable pv2) {
-        return !pv1 == pv2;
+    public static bool operator !=(ClassVariable pv1, ClassVariable pv2) {
+        return pv1 != pv2;
     }
     public string getVariableName() {
-        if (!CodeGeneration.isRegularDataType(ParameterType.Name))
+        if (!CodeGeneration.isRegularDataType(ParameterType.Name()))
             return Name + "ID";
         else
             return Name;

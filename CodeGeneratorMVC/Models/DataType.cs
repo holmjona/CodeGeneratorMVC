@@ -26,16 +26,16 @@ public class DataType {
             _ID = value;
         }
     }
-    public string Name {
-        get {
-            if (_IsPrimitive || _AssociatedClass == null) {
-                if (lang == CodeGeneration.Language.CSharp)
-                    return StaticVariables.Instance.getCSharpTypeName(_Name);
-                return _Name;
-            } else if (_AssociatedClass != null)
-                return _AssociatedClass.Name.Capitalized;
+    public string Name(CodeGeneration.Language lang = CodeGeneration.Language.VisualBasic) {
+
+        if (_IsPrimitive || _AssociatedClass == null) {
+            if (lang == CodeGeneration.Language.CSharp)
+                return StaticVariables.Instance.getCSharpTypeName(_Name);
             return _Name;
-        }
+        } else if (_AssociatedClass != null)
+            return _AssociatedClass.Name.Capitalized();
+        return _Name;
+
     }
     public bool IsPrimitive {
         get {
@@ -83,10 +83,10 @@ public class DataType {
         }
     }
     [Obsolete()]
-    public override string ToString() {
-        return Name(CodeGeneration.Language.VisualBasic);
-    }
-    public new string ToString(CodeGeneration.Language lang) {
+    //public override string ToString() {
+    //    return Name(CodeGeneration.Language.VisualBasic);
+    //}
+    public new string ToString(CodeGeneration.Language lang = CodeGeneration.Language.VisualBasic) {
         return Name(lang);
     }
 }

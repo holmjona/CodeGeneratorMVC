@@ -77,21 +77,21 @@ public class SPGenerator {
             retString += Constants.vbCrLf;
         }
         retString += "AS" + Constants.vbCrLf;
-        retString += Strings.Space(tabSize) + "UPDATE " + pClass.DatabaseTableName + Constants.vbCrLf;
-        retString += Strings.Space(tabSize * 2) + "SET" + Constants.vbCrLf;
+        retString += Strings.Strings.Space((int)tabSize) + "UPDATE " + pClass.DatabaseTableName + Constants.vbCrLf;
+        retString += Strings.Strings.Space((int)tabSize * 2) + "SET" + Constants.vbCrLf;
         count = 0;
 
         foreach (ClassVariable classVar in pClass.ClassVariables) {
             count += 1;
             if (pClass.ValueVariable != classVar) {
-                retString += Strings.Space(tabSize * 3) + classVar.DatabaseColumnName + " = @" + classVar.DatabaseColumnName;
+                retString += Strings.Strings.Space((int)tabSize * 3) + classVar.DatabaseColumnName + " = @" + classVar.DatabaseColumnName;
                 if (count < pClass.ClassVariables.Count)
                     retString += ",";
                 retString += Constants.vbCrLf;
             }
         }
 
-        retString += Strings.Space(tabSize * 2) + "WHERE " + pClass.ValueVariable.DatabaseColumnName + " = @" + pClass.ValueVariable.DatabaseColumnName + Constants.vbCrLf + "GO" + Constants.vbCrLf + Constants.vbCrLf;
+        retString += Strings.Strings.Space((int)tabSize * 2) + "WHERE " + pClass.ValueVariable.DatabaseColumnName + " = @" + pClass.ValueVariable.DatabaseColumnName + Constants.vbCrLf + "GO" + Constants.vbCrLf + Constants.vbCrLf;
         return retString;
     }
     public static string getAddSprocText(ProjectClass pClass) {
@@ -108,7 +108,7 @@ public class SPGenerator {
             retString += Constants.vbCrLf;
         }
         retString += "AS" + Constants.vbCrLf;
-        retString += Strings.Space(tabSize) + "INSERT INTO " + pClass.DatabaseTableName + "(";
+        retString += Strings.Strings.Space((int)tabSize) + "INSERT INTO " + pClass.DatabaseTableName + "(";
         count = 0;
 
         foreach (ClassVariable classVar in pClass.ClassVariables) {
@@ -121,7 +121,7 @@ public class SPGenerator {
                     retString += ")";
             }
         }
-        retString += Constants.vbCrLf + Strings.Space(tabSize * 3) + "VALUES(";
+        retString += Constants.vbCrLf + Strings.Strings.Space((int)tabSize * 3) + "VALUES(";
         count = 0;
         foreach (ClassVariable classVar in pClass.ClassVariables) {
             count += 1;
@@ -132,11 +132,11 @@ public class SPGenerator {
                 else
                     retString += ")";
                 if (count % 5 == 0)
-                    retString += Constants.vbCrLf + Strings.Space(tabSize * 3);
+                    retString += Constants.vbCrLf + Strings.Strings.Space((int)tabSize * 3);
             }
         }
         retString += Constants.vbCrLf;
-        retString += Strings.Space(tabSize) + "SET @" + pClass.ValueVariable.DatabaseColumnName + " = @@IDENTITY" + Constants.vbCrLf + "GO" + Constants.vbCrLf + Constants.vbCrLf;
+        retString += Strings.Strings.Space((int)tabSize) + "SET @" + pClass.ValueVariable.DatabaseColumnName + " = @@IDENTITY" + Constants.vbCrLf + "GO" + Constants.vbCrLf + Constants.vbCrLf;
         return retString;
     }
     public static string getAllItemsSprocText(ProjectClass pClass) {
@@ -148,7 +148,7 @@ public class SPGenerator {
         // TODO: Fix this to handle multiple Primary Keys
         string retString = "CREATE PROCEDURE dbo.sproc" + pClass.Name.Capitalized + "Get" + Constants.vbCrLf;
         retString += "@" + pClass.ValueVariable.DatabaseColumnName + " " + pClass.ValueVariable.DatabaseType + Constants.vbCrLf + "AS" + Constants.vbCrLf;
-        retString += getSelectText("SELECT * FROM " + pClass.DatabaseTableName + Constants.vbCrLf + Strings.Space(tabSize) + "WHERE " + pClass.ValueVariable.DatabaseColumnName + " = @" + pClass.ValueVariable.DatabaseColumnName);
+        retString += getSelectText("SELECT * FROM " + pClass.DatabaseTableName + Constants.vbCrLf + Strings.Strings.Space((int)tabSize) + "WHERE " + pClass.ValueVariable.DatabaseColumnName + " = @" + pClass.ValueVariable.DatabaseColumnName);
         return retString;
     }
     public static string getRemoveItemSprocText(ProjectClass pClass) {
@@ -157,14 +157,14 @@ public class SPGenerator {
                              + "{4}DELETE FROM {3}{5}{4}{4}WHERE {1} = @{1}{5}"
                              + "{5}{4}-- Return -1 if we had an error{5}"
                              + "{4}IF @@ERROR > 0{5}{4}BEGIN{5}{4}{4}RETURN -1{5}{4}END{5}{4}"
-                             + "ELSE{5}{4}BEGIN{5}{4}{4}RETURN 1{5}{4}END{5}END{5}GO{5}{5}", pClass.Name.Capitalized, pClass.ValueVariable.DatabaseColumnName, pClass.ValueVariable.DatabaseType, pClass.DatabaseTableName, Strings.Space(tabSize), Constants.vbCrLf);
+                             + "ELSE{5}{4}BEGIN{5}{4}{4}RETURN 1{5}{4}END{5}END{5}GO{5}{5}", pClass.Name.Capitalized, pClass.ValueVariable.DatabaseColumnName, pClass.ValueVariable.DatabaseType, pClass.DatabaseTableName, Strings.Strings.Space((int)tabSize), Constants.vbCrLf);
     }
     private static string getSelectText(string selectStatement) {
         string retstring = "BEGIN" + Constants.vbCrLf;
-        retstring += Strings.Space(tabSize) + "-- SET NOCOUNT ON added to prevent extra result sets from" + Constants.vbCrLf;
-        retstring += Strings.Space(tabSize) + "-- interfering with SELECT statements." + Constants.vbCrLf;
-        retstring += Strings.Space(tabSize) + "SET NOCOUNT ON;" + Constants.vbCrLf + Constants.vbCrLf;
-        retstring += Strings.Space(tabSize) + selectStatement + Constants.vbCrLf;
+        retstring += Strings.Strings.Space((int)tabSize) + "-- SET NOCOUNT ON added to prevent extra result sets from" + Constants.vbCrLf;
+        retstring += Strings.Strings.Space((int)tabSize) + "-- interfering with SELECT statements." + Constants.vbCrLf;
+        retstring += Strings.Strings.Space((int)tabSize) + "SET NOCOUNT ON;" + Constants.vbCrLf + Constants.vbCrLf;
+        retstring += Strings.Strings.Space((int)tabSize) + selectStatement + Constants.vbCrLf;
         retstring += "END" + Constants.vbCrLf;
         retstring += "GO" + Constants.vbCrLf + Constants.vbCrLf;
         return retstring;

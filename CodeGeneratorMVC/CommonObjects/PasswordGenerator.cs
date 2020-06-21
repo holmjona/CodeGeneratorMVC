@@ -312,12 +312,6 @@ namespace Tools {
             retStr.Append("]");
             return retStr.ToString();
         }
-        /// <summary>
-		/// 		''' Creates a phonetic dictionary for each letter in alphabet as well as some numbers and special characters.
-		/// 		''' </summary>
-        private static Dictionary<char, string> getDict() {
-            Dictionary<char, string> d = 
-            return d;
-        }
+
     }
 }

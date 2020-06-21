@@ -48,14 +48,14 @@ public class ProjectVariable {
             return this == (ProjectVariable)obj;
         return false;
     }
-    public new static bool operator ==(ProjectVariable pv1, ProjectVariable pv2) {
+    public static bool operator ==(ProjectVariable pv1, ProjectVariable pv2) {
         if (pv1 == null & pv2 == null)
             return true;
         if (pv1 == null || pv2 == null)
             return false;
         return pv1.ID == pv2.ID;
     }
-    public new static bool operator !=(ProjectVariable pv1, ProjectVariable pv2) {
+    public static bool operator !=(ProjectVariable pv1, ProjectVariable pv2) {
         return !pv1 == pv2;
     }
 }

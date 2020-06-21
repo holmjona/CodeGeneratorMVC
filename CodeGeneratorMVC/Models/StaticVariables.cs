@@ -377,7 +377,7 @@ public class StaticVariables {
         }
         return null/* TODO Change to default(_) if this is not a reference type */;
     }
-    public DataType GetDatatype(string Name) {
+    public DataType GetDataType(string Name) {
         foreach (DataType dt in DataTypes) {
             if (dt.Name.ToLower().CompareTo(Name.ToLower().Trim()) == 0)
                 return dt;

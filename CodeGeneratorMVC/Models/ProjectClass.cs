@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using System.ComponentModel;
-using IRICommonObjects.Words;
+using Words;
 
 [Serializable()]
 public class ProjectClass : INotifyPropertyChanged {

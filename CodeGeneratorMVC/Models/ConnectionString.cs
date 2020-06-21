@@ -49,14 +49,14 @@ public class ConnectionString {
             return this == (ConnectionString)obj;
         return false;
     }
-    public new static bool operator ==(ConnectionString pv1, ConnectionString pv2) {
+    public static bool operator ==(ConnectionString pv1, ConnectionString pv2) {
         if (pv1 == null & pv2 == null)
             return true;
         if (pv1 == null || pv2 == null)
             return false;
         return pv1.ID == pv2.ID;
     }
-    public new static bool operator !=(ConnectionString pv1, ConnectionString pv2) {
-        return !pv1 == pv2;
+    public static bool operator !=(ConnectionString pv1, ConnectionString pv2) {
+        return pv1 != pv2;
     }
 }

@@ -10,7 +10,7 @@ public class BasePage {
         StringBuilder sb = new StringBuilder();
         sb.Append(cg.getPageImports(lang, includeWebUI: true));
         sb.AppendLine("Public MustInherit Class BasePage");
-        sb.AppendLine(Space(tab.X)); sb.Append("Inherits Web.UI.Page");
+        sb.AppendLine(Strings.Space((int)tab.X)); sb.Append("Inherits Web.UI.Page");
         return sb.ToString();
     }
     private static string getPrivateVariables() {

@@ -51,76 +51,42 @@ namespace Words {
 		/// 		''' <value></value>
 		/// 		''' <returns>The alias from the database with formatting applied.</returns>
 		/// 		''' <remarks>This will apply basic formatting rules applied to what is exactly stored in the database.</remarks>
-        public string Text(bool withJuncture_A) {
-                if (_Text == null) {
-                    _Text = format(_Alias, false);
-                    _JText = format(_Alias, true);
-                }
-                if (withJuncture_A)
-                    return _JText;
-                else
-                    return _Text;
-            
-        }
-        public string Text() {
-                if (_Text == null) {
-                    _Text = format(_Alias, false);
-                    _JText = format(_Alias, true);
-                }
+        public string Text(bool withJuncture_A = false) {
+            if (_Text == null) {
+                _Text = format(_Alias, false);
+                _JText = format(_Alias, true);
+            }
+            if (withJuncture_A)
+                return _JText;
+            else
                 return _Text;
-            
         }
         /// <summary>
 		/// 		''' The singular lowercase text of the alias formated and non breaking spaces removed.
-		/// 		''' </summary>
-		/// 		''' <value></value>
-		/// 		''' <returns>The alias from the database with basic formatting applied and non breaking spaces removed.</returns>
-		/// 		''' <remarks>This is intended for HTML representation.</remarks>
-        public string WithNonBreakingSpaces {
-            get {
-                return WithNonBreakingSpaces(_Alias, withJuncture_A);
-            }
-        }
-        public string WithNonBreakingSpaces {
-            get {
-                return WithNonBreakingSpaces(_Alias);
-            }
-        }
-
-        /// <summary>
 		/// 		''' The given text will be returned with non breaking spaces removed.
 		/// 		''' </summary>
 		/// 		''' <param name="strToFormat">The string to remove non-breaking spaces from.</param>
 		/// 		''' <returns>The text given with non breaking spaces removed.</returns>
 		/// 		''' <remarks>This is intended for HTML representation.</remarks>
-        public string WithNonBreakingSpaces {
-            get {
+        public string WithNonBreakingSpaces(string strToFormat = null, bool withJuncture_A = false) {
+            if (strToFormat != null)
                 return format(strToFormat.Replace(" ", "&nbsp;"), withJuncture_A);
-            }
+            else
+                return format(_Alias.Replace(" ", "&nbsp;"), withJuncture_A);
+
         }
-        public string WithNonBreakingSpaces {
-            get {
-                return format(strToFormat.Replace(" ", "&nbsp;"), false);
-            }
-        }
+
         /// <summary>
-		/// 		''' The Text with the first letter of each word Capitalized.
-		/// 		''' </summary>
-		/// 		''' <returns>The alias from the database with the first letter of each word capitalized.</returns>
-		/// 		''' <remarks></remarks>
-        public string Capitalized {
-            get {
-                if (_TextCapital == null) {
-                    _TextCapital = format(_Alias, false);
-                    _JText = format(_Alias, true);
-                }
-                return getTextCapitalized(_Alias, withJuncture_A);
+        /// 		''' The Text with the first letter of each word Capitalized.
+        /// 		''' </summary>
+        /// 		''' <returns>The alias from the database with the first letter of each word capitalized.</returns>
+        /// 		''' <remarks></remarks>
+        public string Capitalized(bool withJuncture_A = false) {
+            if (_TextCapital == null) {
+                _TextCapital = format(_Alias, false);
+                _JText = format(_Alias, true);
             }
-        }
-        public string Capitalized {
-            get {
-                return getTextCapitalized(_Alias, false);
-            }
+            return getTextCapitalized(_Alias, withJuncture_A);
         }
         /// <summary>
 		/// 		''' Capitalizes and removes any "nbsp;" from the alias name.
@@ -128,15 +94,10 @@ namespace Words {
 		/// 		''' <value></value>
 		/// 		''' <returns>A string which has the first leter capitalized and does not contain non-breaking spaces (nbsp;) where spaces exist.</returns>
 		/// 		''' <remarks></remarks>
-        public string CapitalizedWithNonBreakingSpaces {
-            get {
-                return getTextCapitalized(WithNonBreakingSpaces(withJuncture_A));
-            }
-        }
-        public string CapitalizedWithNonBreakingSpaces {
-            get {
-                return getTextCapitalized(WithNonBreakingSpaces(false));
-            }
+        public string CapitalizedWithNonBreakingSpaces(bool withJuncture_A = false) {
+
+            return getTextCapitalized(WithNonBreakingSpaces(null, withJuncture_A));
+
         }
         /// <summary>
 		/// 		''' Pluralizes and capitalizes the name of the alias. 
@@ -169,10 +130,8 @@ namespace Words {
         ///         ''' and does not contain "nbsp;" where a space is found.
         ///         ''' </returns>
         ///         ''' <remarks></remarks>
-		public string PluralWithNonBreakingSpaces {
-            get {
-                return PluralityDictionary.getPlurality(format(WithNonBreakingSpaces));
-            }
+		public string PluralWithNonBreakingSpaces(bool withJuncture_A = false) {
+            return PluralityDictionary.getPlurality(format(WithNonBreakingSpaces(null, withJuncture_A)));
         }
         /// <summary>
         ///         ''' Capitalizes, pluralizes and removes all non breaking spaces from the name of the alias.
@@ -180,15 +139,15 @@ namespace Words {
         ///         ''' <value></value>
         ///         ''' <returns>A string that is capitalized, plurized and contains no non-breaking spaces from the name of the alias.</returns>
         ///         ''' <remarks></remarks>
-		public string PluralAndCapitalizedWithNonBreakingSpaces {
-            get {
-                return getTextCapitalized(format(PluralWithNonBreakingSpaces));
-            }
+		public string PluralAndCapitalizedWithNonBreakingSpaces() {
+
+            return getTextCapitalized(format(PluralWithNonBreakingSpaces()));
+
         }
         public string PastTense {
             // verbs do not need Junctures; it would not make sence to say "I had a watched the game."
             get {
-                return VerbDictionary.getPastTense(Text);
+                return VerbDictionary.getPastTense(Text());
             }
         }
         public string PastTenseAndCapitalized {
@@ -196,27 +155,16 @@ namespace Words {
                 return getTextCapitalized(PastTense);
             }
         }
-        public string Gerund {
+        public string Gerund(bool withJuncture_A = false) {
             // Gerunds do need Junctions "I went to a swimming meet."
-            get {
-                return VerbDictionary.getGerund(Text(withJuncture_A));
-            }
+
+            return VerbDictionary.getGerund(Text(withJuncture_A));
+
         }
-        public string Gerund {
-            // Gerunds do need Junctions "I went to a swimming meet."
-            get {
-                return VerbDictionary.getGerund(Text(false));
-            }
-        }
-        public string GerundAndCapitalized {
-            get {
-                return getTextCapitalized(Gerund(withJuncture_A));
-            }
-        }
-        public string GerundAndCapitalized {
-            get {
-                return getTextCapitalized(Gerund(false));
-            }
+        public string GerundAndCapitalized(bool withJuncture_A = false) {
+
+            return getTextCapitalized(Gerund(withJuncture_A));
+
         }
         /// <summary>
 		/// 		''' Add the Juncture or "a" or "an" to the start of the alias.
@@ -235,7 +183,7 @@ namespace Words {
                 textToCompare = text.Replace("^", "");
             // may need to create a dictionary for handling exceptions like hotel, one-armed, etc.
             char firstChar; // , secondChar, thirdChar As Char
-            firstChar = textToCompare.Chars[0];
+            firstChar = textToCompare[0];
             if (_Vowels.Contains(firstChar)) {
                 bool isHard = false;
                 foreach (string hw in _HardWords) {
@@ -352,7 +300,7 @@ namespace Words {
         }
 
         public override string ToString() {
-            return Capitalized;
+            return Capitalized();
         }
         /// <summary>
 		/// 		''' Sets the default text if to "[insert_alias]" if not passed any string variable.

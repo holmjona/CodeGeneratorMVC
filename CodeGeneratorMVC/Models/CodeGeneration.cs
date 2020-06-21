@@ -10,7 +10,6 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
-using System.Windows.Forms;
 using System.Drawing;
 
 public class CodeGeneration {
@@ -235,14 +234,14 @@ public class CodeGeneration {
     public static string getClassDeclaration(Language lang, string className, Tabs offset, string inheritedClassName = "") {
         StringBuilder strB = new StringBuilder();
         if (lang == Language.VisualBasic) {
-            strB.AppendLine(Strings.Space(Tabs.X + offset) + "Partial Class " + className);
+            strB.AppendLine(Strings.Space((int)Tabs.X + (int)offset) + "Partial Class " + className);
             if (inheritedClassName != "")
-                strB.AppendLine(Strings.Space(Tabs.XX + offset) + "Inherits " + inheritedClassName);
+                strB.AppendLine(Strings.Space((int)Tabs.XX + (int)offset) + "Inherits " + inheritedClassName);
         } else {
-            strB.Append(Strings.Space(Tabs.X + offset) + "partial class " + className);
+            strB.Append(Strings.Space((int)Tabs.X + (int)offset) + "partial class " + className);
             if (inheritedClassName != "")
                 strB.AppendLine(" : " + inheritedClassName);
-            strB.AppendLine(Strings.Space(Tabs.X + offset) + "{");
+            strB.AppendLine(Strings.Space((int)Tabs.X + (int)offset) + "{");
         }
         return strB.ToString();
     }
@@ -257,7 +256,7 @@ public class CodeGeneration {
         string retStr = "";
         int upperCount = 0;
         int numberCount = 0;
-        bool lastCharWasNumber;
+        bool lastCharWasNumber = false;
         foreach (char c in strToConvert) {
             // Add space in front of upper characters -- FirstName --> First Name
             if (char.IsUpper(c)) {
