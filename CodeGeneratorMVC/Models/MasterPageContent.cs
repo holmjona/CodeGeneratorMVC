@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 [Serializable()]
-public class MasterPageContent : INotifyPropertyChanged {
+public class MasterPageContent { //{ : INotifyPropertyChanged {
     // Private _name As String
     // Private _ContainsLiteralText As Boolean
     // Private _ContainsLabelText As Boolean

@@ -13,7 +13,7 @@ using Microsoft.VisualBasic;
 using System.ComponentModel;
 
 [Serializable()]
-public class DALClass : INotifyPropertyChanged {
+public class DALClass{ //: INotifyPropertyChanged {
     private ConnectionString _ReadOnlyConnectionString;
     private ConnectionString _EditOnlyConnectionSTring;
     private ProjectVariable _NamespaceName;

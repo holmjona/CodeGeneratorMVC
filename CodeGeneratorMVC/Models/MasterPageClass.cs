@@ -10,8 +10,6 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
-using EnvDTE;
-using EnvDTE80;
 using System.ComponentModel;
 
 [Serializable()]
@@ -85,51 +83,51 @@ public class MasterPageClass {
         }
     }
 
-    public static List<MasterPageClass> getMasterPagesForProject(DTE2 _applicationObject) {
-        List<MasterPageClass> retList = new List<MasterPageClass>();
-        if (_applicationObject != null && _applicationObject.Solution != null) {
-            if (_applicationObject.Solution.Projects.Count > 0) {
-                Project myProject = _applicationObject.Solution.Projects.Item(1);
-                if (myProject != null) {
-                    StaticVariables.Instance.IsProjectOpen = true;
-                    foreach (ProjectItem projItem in myProject.ProjectItems)
-                        fillMasterPages(projItem, ref retList);
-                }
-            }
-        }
-        return retList;
-    }
-    private static void fillMasterPages(ProjectItem myItem, ref List<MasterPageClass> listOfMasterPageClasses) {
-        try {
-            if (myItem.Name.ToLower().Contains(".master")) {
-                if (!myItem.Name.Contains(".master.vb")) {
-                    MasterPageClass newMasterPage = new MasterPageClass();
-                    newMasterPage.FileName = myItem.Name;
-                    newMasterPage.Name = System.IO.Path.GetFileNameWithoutExtension(myItem.Name);
-                    // MsgBox(myItem.Document.FullName)
-                    string myValue = myItem.ContainingProject.FullName;
-                    newMasterPage.MasterPageContents = new BindingList<MasterPageContent>();
-                    FillMasterPageContent(ref newMasterPage, myValue + myItem.Name);
-                    listOfMasterPageClasses.Add(newMasterPage);
-                }
+    //public static List<MasterPageClass> getMasterPagesForProject(DTE2 _applicationObject) {
+    //    List<MasterPageClass> retList = new List<MasterPageClass>();
+    //    if (_applicationObject != null && _applicationObject.Solution != null) {
+    //        if (_applicationObject.Solution.Projects.Count > 0) {
+    //            Project myProject = _applicationObject.Solution.Projects.Item(1);
+    //            if (myProject != null) {
+    //                StaticVariables.Instance.IsProjectOpen = true;
+    //                foreach (ProjectItem projItem in myProject.ProjectItems)
+    //                    fillMasterPages(projItem, ref retList);
+    //            }
+    //        }
+    //    }
+    //    return retList;
+    //}
+    //private static void fillMasterPages(ProjectItem myItem, ref List<MasterPageClass> listOfMasterPageClasses) {
+    //    try {
+    //        if (myItem.Name.ToLower().Contains(".master")) {
+    //            if (!myItem.Name.Contains(".master.vb")) {
+    //                MasterPageClass newMasterPage = new MasterPageClass();
+    //                newMasterPage.FileName = myItem.Name;
+    //                newMasterPage.Name = System.IO.Path.GetFileNameWithoutExtension(myItem.Name);
+    //                // MsgBox(myItem.Document.FullName)
+    //                string myValue = myItem.ContainingProject.FullName;
+    //                newMasterPage.MasterPageContents = new BindingList<MasterPageContent>();
+    //                FillMasterPageContent(ref newMasterPage, myValue + myItem.Name);
+    //                listOfMasterPageClasses.Add(newMasterPage);
+    //            }
 
-                if (myItem.Document != null) {
-                    if (myItem.Document.FullName.ToLower().Contains(".master") && !myItem.Document.FullName.ToLower().Contains(".master.vb")) {
-                        MasterPageClass newMasterPage = new MasterPageClass();
-                        newMasterPage.FileName = myItem.Document.FullName;
-                        // MsgBox(myItem.Document.FullName)
-                        FillMasterPageContent(ref newMasterPage, myItem.Document.FullName);
-                        listOfMasterPageClasses.Add(newMasterPage);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-        }
-        if (myItem.ProjectItems != null && myItem.ProjectItems.Count > 0) {
-            foreach (ProjectItem projItem in myItem.ProjectItems)
-                fillMasterPages(projItem, ref listOfMasterPageClasses);
-        }
-    }
+    //            if (myItem.Document != null) {
+    //                if (myItem.Document.FullName.ToLower().Contains(".master") && !myItem.Document.FullName.ToLower().Contains(".master.vb")) {
+    //                    MasterPageClass newMasterPage = new MasterPageClass();
+    //                    newMasterPage.FileName = myItem.Document.FullName;
+    //                    // MsgBox(myItem.Document.FullName)
+    //                    FillMasterPageContent(ref newMasterPage, myItem.Document.FullName);
+    //                    listOfMasterPageClasses.Add(newMasterPage);
+    //                }
+    //            }
+    //        }
+    //    } catch (Exception ex) {
+    //    }
+    //    if (myItem.ProjectItems != null && myItem.ProjectItems.Count > 0) {
+    //        foreach (ProjectItem projItem in myItem.ProjectItems)
+    //            fillMasterPages(projItem, ref listOfMasterPageClasses);
+    //    }
+    //}
     private static void FillMasterPageContent(ref MasterPageClass newMasterPage, string FileName) {
         if (System.IO.File.Exists(FileName)) {
             System.IO.StreamReader myRead = System.IO.File.OpenText(FileName);

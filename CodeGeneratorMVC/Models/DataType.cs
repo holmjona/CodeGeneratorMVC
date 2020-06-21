@@ -29,12 +29,12 @@ public class DataType {
     public string Name(CodeGeneration.Language lang = CodeGeneration.Language.VisualBasic) {
 
         if (_IsPrimitive || _AssociatedClass == null) {
-            if (lang == CodeGeneration.Language.CSharp)
-                return StaticVariables.Instance.getCSharpTypeName(_Name);
-            return _Name;
-        } else if (_AssociatedClass != null)
+            return CodeGeneration.GetByLanguage(lang, _Name, StaticVariables.Instance.getCSharpTypeName(_Name));
+        } else if (_AssociatedClass != null) {
             return _AssociatedClass.Name.Capitalized();
-        return _Name;
+        } else {
+            return _Name;
+        }
 
     }
     public bool IsPrimitive {

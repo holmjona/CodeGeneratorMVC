@@ -10,6 +10,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
+using Words;
 using System.ComponentModel;
 
 [Serializable()]
@@ -361,7 +362,7 @@ public class ClassVariable  {
     }
     public string DatabaseTypeWithLength {
         get {
-            return _DatabaseType + Interaction.IIf(_LengthOfDatabaseProperty > -1, "(" + _LengthOfDatabaseProperty + ")", "").ToString();
+            return _DatabaseType + (_LengthOfDatabaseProperty > -1? "(" + _LengthOfDatabaseProperty + ")": "");
         }
     }
     public override string ToString() {

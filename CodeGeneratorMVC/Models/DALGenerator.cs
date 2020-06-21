@@ -35,7 +35,7 @@ public class DALGenerator {
     }
     public static string getDALFunction_Delete(ProjectClass pClass, string editconn, cg.Language lang) {
         StringBuilder strB = new StringBuilder();
-        strB.Append(cg.getMetaDataText("Attempts to delete the database entry corresponding to the " + pClass.Name.Capitalized(), false, 
+        strB.Append(cg.getMetaDataText("Attempts to delete the database entry corresponding to the " + pClass.Name.Capitalized(), false,
             (int)tab.XX, lang, "Integer"));
         if (lang == CodeGeneration.Language.VisualBasic) {
             strB.Append(Strings.Space((int)tab.XX) + "Friend Shared Function Remove" + pClass.Name.Capitalized());
@@ -77,15 +77,15 @@ public class DALGenerator {
     }
     public static string getDALFunction_SelectAll(ProjectClass pClass, string readConnection, cg.Language lang) {
         StringBuilder strB = new StringBuilder();
-        strB.Append(CodeGeneration.getMetaDataText("Gets a list of all " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() 
-                                                    + " objects from the database.", false, (int)tab.XX, lang, 
-                                                    (lang == CodeGeneration.Language.VisualBasic? "List(Of ": "List<")
-                                                   + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() 
-                                                   + (lang == CodeGeneration.Language.VisualBasic? ")": ">")));
+        strB.Append(CodeGeneration.getMetaDataText("Gets a list of all " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
+                                                    + " objects from the database.", false, (int)tab.XX, lang,
+                                                    cg.GetByLanguage(lang, "List(Of ", "List<")
+                                                   + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
+                                                   + cg.GetByLanguage(lang, ")", ">")));
         string sprocName = "sproc" + pClass.Name.PluralAndCapitalized + "GetAll";
 
         if (lang == CodeGeneration.Language.VisualBasic) {
-            strB.AppendLine(Strings.Space((int)tab.XX) + "Public Shared Function Get" + pClass.Name.PluralAndCapitalized 
+            strB.AppendLine(Strings.Space((int)tab.XX) + "Public Shared Function Get" + pClass.Name.PluralAndCapitalized
                 + "() As List(Of " + pClass.Name.Capitalized() + ")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim comm As New SqlCommand(\"" + sprocName + "\")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim retList As New List(Of " + pClass.Name.Capitalized() + ")");
@@ -129,10 +129,10 @@ public class DALGenerator {
     public static string getDALFunction_SelectAssociative(ProjectClass pClass, string readConnection, cg.Language lang) {
         StringBuilder retStr = new StringBuilder();
         foreach (ProjectClass assProjClass in pClass.AssociatedClasses) {
-            retStr.Append(CodeGeneration.getMetaDataText("Gets a list of all " + pClass.NameWithNameSpace + " objects from the database.", false, 
-                                                  (int)tab.XX, lang, (lang == CodeGeneration.Language.VisualBasic? "List(Of ": "List<")
-                                                  + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() 
-                                                  + (lang == CodeGeneration.Language.VisualBasic? ")": ">")));
+            retStr.Append(CodeGeneration.getMetaDataText("Gets a list of all " + pClass.NameWithNameSpace + " objects from the database.", false,
+                                                  (int)tab.XX, lang, cg.GetByLanguage(lang, "List(Of ", "List<")
+                                                  + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
+                                                  + cg.GetByLanguage(lang, ")", ">")));
             string sprocName = "sproc" + pClass.Name.PluralAndCapitalized + "GetFor" + assProjClass.Name.Capitalized();
             if (lang == CodeGeneration.Language.VisualBasic) {
                 retStr.AppendLine(Strings.Space((int)tab.XX) + "Public Shared Function Get" + pClass.Name.PluralAndCapitalized + "(obj AS " + assProjClass.NameWithNameSpace + ")" + " As List(Of " + pClass.NameWithNameSpace + ")");
@@ -228,7 +228,7 @@ public class DALGenerator {
     }
     public static string getDALFunction_SelectSingle(ProjectClass pClass, string readConnection, cg.Language lang) {
         StringBuilder strB = new StringBuilder();
-        strB.AppendLine(CodeGeneration.getMetaDataText("Gets the " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Text() 
+        strB.AppendLine(CodeGeneration.getMetaDataText("Gets the " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Text()
                                                     + "corresponding with the given ID", false, (int)tab.XX, lang, pClass.Name.Capitalized()));
 
         string sprocName = "sproc" + pClass.Name.Capitalized() + "Get";
@@ -285,8 +285,8 @@ public class DALGenerator {
             strEndLine = ";";
         }
         if (conCat == null)
-            conCat = (lang == CodeGeneration.Language.VisualBasic? "&": "+");
-        return string.Format("{0}.Parameters.AddWithValue(\"@\" {1} {2}.db_{3}, {4}){5}", 
+            conCat = cg.GetByLanguage(lang, "&", "+");
+        return string.Format("{0}.Parameters.AddWithValue(\"@\" {1} {2}.db_{3}, {4}){5}",
                                 strStart, conCat, projectClass.Name.Capitalized(), strConst, strValueVar, strEndLine);
     }
 
@@ -295,24 +295,21 @@ public class DALGenerator {
         string dataParameter = "";
         foreach (ClassVariable classVar in pClass.ClassVariables) {
             if (classVar.ParameterType.IsImage) {
-                if (lang == CodeGeneration.Language.VisualBasic)
-                    dataParameter = ", ByVal data As Byte()";
-                else
-                    dataParameter = ", Byte[] data";
+                dataParameter = cg.GetByLanguage(lang, ", ByVal data As Byte()", ", Byte[] data");
             }
         }
         string sprocName = "sproc_" + pClass.Name.Capitalized() + "Add";
         strB.AppendLine(CodeGeneration.getMetaDataText("Attempts to add a database entry corresponding to the given "
                                                        + pClass.Name.Capitalized(), false, (int)tab.XX, lang, "Integer"));
         if (lang == CodeGeneration.Language.VisualBasic) {
-            strB.AppendLine(Strings.Space((int)tab.XX) + "Friend Shared Function Add" + pClass.Name.Capitalized() 
+            strB.AppendLine(Strings.Space((int)tab.XX) + "Friend Shared Function Add" + pClass.Name.Capitalized()
                                         + "(ByVal obj As " + pClass.Name.Capitalized() + dataParameter + ") As Integer");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "If obj Is Nothing Then Return -1");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim comm As New SqlCommand(\"" + sprocName + "\")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Try");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "With comm");
         } else {
-            strB.AppendLine(Strings.Space((int)tab.XX) + "internal static int Add" + pClass.Name.Capitalized() 
+            strB.AppendLine(Strings.Space((int)tab.XX) + "internal static int Add" + pClass.Name.Capitalized()
                                         + "(" + pClass.Name.Capitalized() + " obj" + dataParameter + ")");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "if (obj == null) return -1;");
@@ -332,7 +329,7 @@ public class DALGenerator {
                 else if (!CodeGeneration.isRegularDataType(classVar.ParameterType.Name()))
                     objVar = "obj." + classVar.getVariableName();
                 else
-                    objVar = "obj." + classVar.Name + (classVar.ParameterType.IsNameAlias? ".TextUnFormatted": "");
+                    objVar = "obj." + classVar.Name + (classVar.ParameterType.IsNameAlias ? ".TextUnFormatted" : "");
                 // strB.AppendLine(")" & IIf(lang = CodeGeneration.Language.CSharp, ";", "").ToString())
                 strB.AppendLine(Strings.Space((int)tab.XXXX) + getParaString(lang, pClass, classVar.Name, objVar));
             }

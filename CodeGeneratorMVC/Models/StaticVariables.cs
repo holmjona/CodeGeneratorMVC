@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using System.ComponentModel;
-using EnvDTE80;
 using System.Runtime.Serialization;
 using language = CodeGeneration.Language;
 
@@ -20,7 +19,6 @@ public class StaticVariables {
     private static StaticVariables myInstance = null;
     private bool _IsProjectOpen = false;
     [NonSerialized()]
-    public DTE2 _ApplicationObject;
     private ClassVariable _ClassVariableToEdit;
     private BindingList<ProjectClass> _ListOfProjectClasses = new BindingList<ProjectClass>();
     private ProjectClass _SelectedProjectClass;
@@ -84,9 +82,9 @@ public class StaticVariables {
 
     public static string getDataPrimative(DataPrimitives dp, language language) {
         if (language == CodeGeneration.Language.VisualBasic)
-            return PrimitiveDataTypes[dp];
+            return PrimitiveDataTypes[(int)dp];
         else
-            return _CSharpPrimitivesMap[PrimitiveDataTypes[dp]];
+            return _CSharpPrimitivesMap[PrimitiveDataTypes[(int)dp]];
     }
 
     public ProjectClass AliasGroupClass {
@@ -145,14 +143,14 @@ public class StaticVariables {
             myInstance = value;
         }
     }
-    public DTE2 ApplicationObject {
-        get {
-            return _ApplicationObject;
-        }
-        set {
-            _ApplicationObject = value;
-        }
-    }
+    //public DTE2 ApplicationObject {
+    //    get {
+    //        return _ApplicationObject;
+    //    }
+    //    set {
+    //        _ApplicationObject = value;
+    //    }
+    //}
     public ClassVariable ClassVariableToEdit {
         get {
             return _ClassVariableToEdit;
@@ -269,8 +267,8 @@ public class StaticVariables {
         get {
             if (_MasterPages == null) {
                 _MasterPages = new BindingList<MasterPageClass>();
-                foreach (MasterPageClass mPage in MasterPageClass.getMasterPagesForProject(ApplicationObject))
-                    _MasterPages.Add(mPage);
+                //foreach (MasterPageClass mPage in MasterPageClass.getMasterPagesForProject(ApplicationObject))
+                //    _MasterPages.Add(mPage);
             }
             return _MasterPages;
         }
@@ -309,7 +307,7 @@ public class StaticVariables {
         foreach (var pt in PrimitiveDataTypes) {
             bool wasFound = false;
             foreach (var dt in DataTypes) {
-                if (dt.Name == pt) {
+                if (dt.Name() == pt) {
                     wasFound = true;
                     break;
                 }
@@ -354,7 +352,7 @@ public class StaticVariables {
         bool classExists = false;
         // check to see if datatype is already in the list.
         foreach (DataType dType in StaticVariables.Instance.DataTypes) {
-            if (dType.Name.ToLower().CompareTo(pClass.Name.Capitalized.ToLower()) == 0) {
+            if (dType.Name().ToLower().CompareTo(pClass.Name.Capitalized().ToLower()) == 0) {
                 classExists = false;
                 return;
             }
@@ -365,7 +363,7 @@ public class StaticVariables {
     }
 
     public void AddDataType(ref ProjectClass pClass, bool IsDataTypePrimitive) {
-        _DataTypes.Add(new DataType(_DataTypes.Count, pClass.Name.Capitalized, IsDataTypePrimitive, pClass));
+        _DataTypes.Add(new DataType(_DataTypes.Count, pClass.Name.Capitalized(), IsDataTypePrimitive, pClass));
     }
     public void AddPrimitiveDataType(string DataTypeName, bool IsDataTypePrimitive) {
         _DataTypes.Add(new DataType(_DataTypes.Count, DataTypeName, IsDataTypePrimitive, null));
@@ -379,7 +377,7 @@ public class StaticVariables {
     }
     public DataType GetDataType(string Name) {
         foreach (DataType dt in DataTypes) {
-            if (dt.Name.ToLower().CompareTo(Name.ToLower().Trim()) == 0)
+            if (dt.Name().ToLower().CompareTo(Name.ToLower().Trim()) == 0)
                 return dt;
         }
         return null/* TODO Change to default(_) if this is not a reference type */;
@@ -415,24 +413,25 @@ public class StaticVariables {
         formatter.Serialize(stream, this);
         stream.Close();
     }
-    public void Save(string filename) {
+    public void Save(string filename, ref List<string> messages) {
         bool overWriteFile = true;
-        if (System.IO.File.Exists(filename)) {
-            MsgBoxResult over;
-            over = Interaction.MsgBox("File (" + filename + ") already exists. Do you wish to overwrite the file?", MsgBoxStyle.YesNo);
-            overWriteFile = over == MsgBoxResult.Yes;
-        }
-        if (overWriteFile) {
-            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            FileStream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
-            formatter.Serialize(stream, this);
-            stream.Close();
-            StaticVariables.Instance.FileSaveAddress = filename;
-            Interaction.MsgBox("Project successfully saved to " + filename + ".");
-        } else
-            CodeGeneratorForm.handleSaveAsDialog();
+        //if (System.IO.File.Exists(filename)) {
+        //    MsgBoxResult over;
+        //    over = Interaction.MsgBox("File (" + filename + ") already exists. Do you wish to overwrite the file?", MsgBoxStyle.YesNo);
+        //    overWriteFile = over == MsgBoxResult.Yes;
+        //}
+        //if (overWriteFile) {
+        System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+        FileStream stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None);
+        formatter.Serialize(stream, this);
+        stream.Close();
+        StaticVariables.Instance.FileSaveAddress = filename;
+        //Interaction.MsgBox("Project successfully saved to " + filename + ".");
+        messages.Add("Project successfully saved to " + filename + ".");
+        //} else
+        //    CodeGeneratorForm.handleSaveAsDialog();
     }
-    public static StaticVariables Load(string filename) {
+    public static StaticVariables Load(string filename, ref List<string> messages) {
         System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
         FileStream fromStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
         StaticVariables sv = null;
@@ -440,8 +439,8 @@ public class StaticVariables {
             sv = (StaticVariables)formatter.Deserialize(fromStream);
             sv.verifyPrimitiveDataTypesExist();
         } catch (Exception ex) {
-            Interaction.MsgBox("Oops, we could not load the variables due to the following error: "
-+ ex.Message);
+            //Interaction.MsgBox("Oops, we could not load the variables due to the following error: "
+            messages.Add("Oops, we could not load the variables due to the following error: "+ ex.Message);
         } finally {
             if (fromStream != null) {
                 fromStream.Close();
@@ -458,10 +457,10 @@ public class StaticVariables {
             Dictionary<string, DataType> dictOTypes = new Dictionary<string, DataType>();
             List<DataType> lstOfTypesToRemove = new List<DataType>();
             foreach (DataType dt in Instance.DataTypes) {
-                if (!dictOTypes.ContainsKey(dt.Name))
-                    dictOTypes.Add(dt.Name, dt);
+                if (!dictOTypes.ContainsKey(dt.Name()))
+                    dictOTypes.Add(dt.Name(), dt);
                 else {
-                    DataType typeInList = dictOTypes[dt.Name];
+                    DataType typeInList = dictOTypes[dt.Name()];
                     bool moveFirstToSecond = false;
                     if (dt.AssociatedProjectClass.NameSpaceVariable != null & typeInList.AssociatedProjectClass.NameSpaceVariable != null)
                         // both have class types
@@ -474,7 +473,7 @@ public class StaticVariables {
                         if (dt.AssociatedProjectClass.NameSpaceVariable != null) {
                             lstOfTypesToRemove.Add(typeInList);
                             moveFirstToSecond = true;
-                            dictOTypes[dt.Name] = dt;
+                            dictOTypes[dt.Name()] = dt;
                         } else
                             lstOfTypesToRemove.Add(dt);
                     } else {
@@ -494,7 +493,7 @@ public class StaticVariables {
     private static void updateClassesToNewDataType(DataType oldType, DataType newType) {
         foreach (ProjectClass cl in Instance._ListOfProjectClasses) {
             foreach (ClassVariable cv in cl.ClassVariables) {
-                if (cv.ParameterType.Name == oldType.Name)
+                if (cv.ParameterType.Name() == oldType.Name())
                     cv.ParameterType = newType;
             }
         }

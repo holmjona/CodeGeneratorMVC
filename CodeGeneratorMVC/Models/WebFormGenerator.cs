@@ -10,8 +10,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
-using EnvDTE;
-using IRICommonObjects.Words;
+using Words;
 using cg = CodeGeneration;
 using language = CodeGeneration.Language;
 using tab = CodeGeneration.Tabs;
@@ -35,9 +34,9 @@ public class WebFormGenerator
         {
             strB.AppendLine(Strings.Space((int)tab.X) + "Protected Sub Page_Load(ByVAl sender As Object, ByVal e As System.EventArgs) Handles Me.Load");
             strB.AppendLine(Strings.Space((int)tab.XX) + "If Not IsPostBack Then");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim myObject As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + " = get" + pClass.Name.Capitalized + "FromQueryString()");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim myObject As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + " = get" + pClass.Name.Capitalized() + "FromQueryString()");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "If myObject Is Nothing Then");
-            strB.AppendLine(Strings.Space((int)tab.XXXX) + "SessionVariables.addError(StringToolkit.ObjectNotFound(AliasGroup." + pClass.Name.Capitalized + "))");
+            strB.AppendLine(Strings.Space((int)tab.XXXX) + "SessionVariables.addError(StringToolkit.ObjectNotFound(AliasGroup." + pClass.Name.Capitalized() + "))");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "Redirect(\"" + pClass.Name.PluralAndCapitalized + ".aspx\")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "End If");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "fillForm(myObject)");
@@ -50,11 +49,11 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
             strB.AppendLine(Strings.Space((int)tab.XX) + "if (!IsPostBack)");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized
-                            + " myObject = get" + pClass.Name.Capitalized + "FromQueryString();");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
+                            + " myObject = get" + pClass.Name.Capitalized() + "FromQueryString();");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "if (myObject != null)");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXXX) + "SessionVariables.addError(StringToolkit.ObjectNotFound(AliasGroup." + pClass.Name.Capitalized + "));");
+            strB.AppendLine(Strings.Space((int)tab.XXXX) + "SessionVariables.addError(StringToolkit.ObjectNotFound(AliasGroup." + pClass.Name.Capitalized() + "));");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "Redirect(\"" + pClass.Name.PluralAndCapitalized + ".aspx\");");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "}");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "fillForm(myObject);");
@@ -88,17 +87,17 @@ public class WebFormGenerator
         StringBuilder strB = new StringBuilder();
         if (lang == language.VisualBasic)
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function get" + pClass.Name.Capitalized + "FromQueryString() As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized);
-            strB.AppendLine(Strings.Space((int)tab.XX) + "Return " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name + ".get" + pClass.Name.Capitalized + "(Request.QueryString(\"id\"), True)");
+            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function get" + pClass.Name.Capitalized() + "FromQueryString() As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized());
+            strB.AppendLine(Strings.Space((int)tab.XX) + "Return " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name + ".get" + pClass.Name.Capitalized() + "(Request.QueryString(\"id\"), True)");
             strB.AppendLine(Strings.Space((int)tab.X) + "End Function");
         }
         else
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "private " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized
-                      + " get" + pClass.Name.Capitalized + "FromQueryString()");
+            strB.AppendLine(Strings.Space((int)tab.X) + "private " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
+                      + " get" + pClass.Name.Capitalized() + "FromQueryString()");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
             strB.AppendLine(Strings.Space((int)tab.XX) + "return " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name
-                            + ".get" + pClass.Name.Capitalized + "(Request.QueryString(\"id\"), True);");
+                            + ".get" + pClass.Name.Capitalized() + "(Request.QueryString(\"id\"), True);");
             strB.AppendLine(Strings.Space((int)tab.X) + "}");
         }
         strB.AppendLine();
@@ -110,28 +109,25 @@ public class WebFormGenerator
         StringBuilder strB = new StringBuilder();
         char lineEnd = ' ';
         char conCat = '&';
-        if (lang == language.CSharp)
-        {
-            lineEnd = ';';
-            conCat = '+';
-        }
         if (lang == language.VisualBasic)
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "Private Sub fillForm(ByVal my" + pClass.Name.Capitalized + " As "
-+ pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + ")");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized + ".ID = -1 Then ");
+            strB.AppendLine(Strings.Space((int)tab.X) + "Private Sub fillForm(ByVal my" + pClass.Name.Capitalized() + " As "
+                                + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + ")");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized() + ".ID = -1 Then ");
         }
         else
         {
+            lineEnd = ';';
+            conCat = '+';
             strB.AppendLine(Strings.Space((int)tab.X) + "private void fillForm(" + pClass.NameSpaceVariable.NameBasedOnID
-                      + "." + pClass.Name.Capitalized + " my" + pClass.Name.Capitalized + ")");
+                      + "." + pClass.Name.Capitalized() + " my" + pClass.Name.Capitalized() + ")");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized + ".ID = -1)");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized() + ".ID = -1)");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
         }
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "btnSaveChanges.Text = AliasGroup.Add.Capitalized" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "litTitle.Text = AliasGroup.Add.Capitalized " + conCat
-                        + " \" \"  & AliasGroup." + pClass.Name.Capitalized + ".Capitalized" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "btnSaveChanges.Text = AliasGroup.Add.Capitalized()" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "litTitle.Text = AliasGroup.Add.Capitalized() " + conCat
+                        + " \" \"  & AliasGroup." + pClass.Name.Capitalized() + ".Capitalized()" + lineEnd);
         strB.AppendLine(Strings.Space((int)tab.XXX) + "lblSubTitle.Text=litTitle.Text" + lineEnd);
 
         if (lang == language.VisualBasic)
@@ -143,8 +139,8 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
         }
 
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "litTitle.Text = AliasGroup.Edit.Capitalized " + conCat
-                        + " \" \" " + conCat + " AliasGroup." + pClass.Name.Capitalized + ".Capitalized" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "litTitle.Text = AliasGroup.Edit.Capitalized() " + conCat
+                        + " \" \" " + conCat + " AliasGroup." + pClass.Name.Capitalized() + ".Capitalized()" + lineEnd);
         strB.AppendLine(Strings.Space((int)tab.XXX) + "lblSubTitle.Text=litTitle.Text" + lineEnd);
         foreach (ClassVariable classVar in pClass.ClassVariables)
         {
@@ -152,29 +148,33 @@ public class WebFormGenerator
                 continue;
             if (classVar.IsTextBox)
             {
-                strB.Append(Strings.Space((int)tab.XXX) + "txt" + classVar.Name + ".Text = my" + pClass.Name.Capitalized + "." + classVar.Name);
+                strB.Append(Strings.Space((int)tab.XXX) + "txt" + classVar.Name + ".Text = my" + pClass.Name.Capitalized() + "." + classVar.Name);
                 if (classVar.IsDouble || classVar.IsInteger)
                     strB.Append(".ToString()");
                 else if (classVar.ParameterType.IsNameAlias)
                     strB.Append(".TextUnFormatted");
-                strB.AppendLine(lineEnd);
+                strB.AppendLine(lineEnd.ToString());
             }
             else if (classVar.IsCheckBox)
-                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.DefaultHTMLName + ".Checked = my" + pClass.Name.Capitalized + "." + classVar.Name + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.DefaultHTMLName + ".Checked = my" + pClass.Name.Capitalized() + "." + classVar.Name + lineEnd);
             else if (classVar.IsDate)
             {
-                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.GetMonthTextControlName + ".Text = my" + pClass.Name.Capitalized + "." + classVar.Name + ".Month.ToString()" + lineEnd);
-                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.getDayTextControlName + ".Text = my" + pClass.Name.Capitalized + "." + classVar.Name + ".Day.ToString()" + lineEnd);
-                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.getYearTextControlName + ".Text = my" + pClass.Name.Capitalized + "." + classVar.Name + ".Year.ToString()" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.GetMonthTextControlName() + ".Text = my" + pClass.Name.Capitalized() + "." + classVar.Name + ".Month.ToString()" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.getDayTextControlName() + ".Text = my" + pClass.Name.Capitalized() + "." + classVar.Name + ".Day.ToString()" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.getYearTextControlName() + ".Text = my" + pClass.Name.Capitalized() + "." + classVar.Name + ".Year.ToString()" + lineEnd);
             }
             else if (classVar.IsDropDownList)
             {
-                NameAlias tempAlias = new NameAlias(classVar.ParameterType.Name.ToLower());
+                NameAlias tempAlias = new NameAlias(classVar.ParameterType.Name().ToLower());
                 if (lang == language.VisualBasic)
-                    strB.AppendLine(Strings.Space((int)tab.XXX) + "For Each tempObject As " + pClass.NameSpaceVariable.NameBasedOnID + "." + classVar.ParameterType.Name + " In " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name + ".Get" + tempAlias.PluralAndCapitalized + "()");
+                    strB.AppendLine(Strings.Space((int)tab.XXX) + "For Each tempObject As " + pClass.NameSpaceVariable.NameBasedOnID 
+                        + "." + classVar.ParameterType.Name() + " In " + pClass.NameSpaceVariable.NameBasedOnID + "." 
+                        + pClass.DALClassVariable.Name + ".Get" + tempAlias.PluralAndCapitalized + "()");
                 else
                 {
-                    strB.AppendLine(Strings.Space((int)tab.XXX) + "foreach (" + pClass.NameSpaceVariable.NameBasedOnID + "." + classVar.ParameterType.Name + " tempObject in " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name + ".Get" + tempAlias.PluralAndCapitalized + "())");
+                    strB.AppendLine(Strings.Space((int)tab.XXX) + "foreach (" + pClass.NameSpaceVariable.NameBasedOnID + "." 
+                        + classVar.ParameterType.Name() + " tempObject in " + pClass.NameSpaceVariable.NameBasedOnID + "." 
+                        + pClass.DALClassVariable.Name + ".Get" + tempAlias.PluralAndCapitalized + "())");
                     strB.AppendLine(Strings.Space((int)tab.XXX) + "{");
                 }
                 strB.Append(Strings.Space((int)tab.XXXX) + classVar.DefaultHTMLName + ".Items.Add(new ListItem(tempObject.");
@@ -196,7 +196,7 @@ public class WebFormGenerator
                     strB.AppendLine(Strings.Space((int)tab.XXX) + "Next");
                 else
                     strB.AppendLine(Strings.Space((int)tab.XXX) + "}");
-                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.DefaultHTMLName + ".SelectedValue = my" + pClass.Name.Capitalized + "." + classVar.Name + "ID.ToString()" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XXX) + classVar.DefaultHTMLName + ".SelectedValue = my" + pClass.Name.Capitalized() + "." + classVar.Name + "ID.ToString()" + lineEnd);
             }
         }
         if (lang == language.VisualBasic)
@@ -262,7 +262,7 @@ public class WebFormGenerator
             {
                 if (!doubleExists)
                 {
-                    strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempDouble As Double", "double tempdouble;").ToString());
+                    strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Dim tempDouble As Double": "double tempdouble;"));
                     doubleExists = true;
                 }
                 if (lang == language.VisualBasic)
@@ -275,13 +275,13 @@ public class WebFormGenerator
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(\"" + classVar.Name + " is in an invalid format.\")" + lineEnd);
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "retVal = false" + lineEnd);
 
-                strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End If", "}").ToString());
+                strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "End If": "}"));
             }
             else if (classVar.IsInteger)
             {
                 if (!integerExists)
                 {
-                    strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempInteger As Integer", "int tempInteger;").ToString());
+                    strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Dim tempInteger As Integer": "int tempInteger;"));
                     integerExists = true;
                 }
                 if (lang == language.VisualBasic)
@@ -294,12 +294,12 @@ public class WebFormGenerator
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(\"" + classVar.Name + " is in an invalid format.\")" + lineEnd);
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "retVal = False" + lineEnd);
 
-                strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End If", "}").ToString());
+                strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "End If": "}"));
             }
             else if (classVar.IsDate)
             {
                 if (!dateExists)
-                    strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempDateTime As DateTime", "DateTime tempDateTime;").ToString());
+                    strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Dim tempDateTime As DateTime": "DateTime tempDateTime;"));
                 string dateString = classVar.GetMonthTextControlName() + ".Text.Trim() & \"/\" & " + classVar.getDayTextControlName() + ".Text.Trim() & \"/\" & " + classVar.getYearTextControlName() + ".Text.Trim()";
                 if (lang == language.VisualBasic)
                     strB.AppendLine(Strings.Space((int)tab.XX) + "If Not DateTime.TryParse(" + dateString + ", tempDateTime) Then ");
@@ -311,13 +311,13 @@ public class WebFormGenerator
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(\"" + classVar.Name + " is in an invalid format.\")" + lineEnd);
                 strB.AppendLine(Strings.Space((int)tab.XXX) + "retVal = false" + lineEnd);
 
-                strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End If", "}").ToString());
+                strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic ? "End If" : "}"));
                 dateExists = true;
             }
         }
 
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Return", "return").ToString() + " retVal" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End Function", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Return": "return") + " retVal" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "End Function": "}"));
 
         strB.AppendLine();
         return strB.ToString();
@@ -331,8 +331,8 @@ public class WebFormGenerator
             lineEnd = ' ';
             strB.AppendLine(Strings.Space((int)tab.X) + "Protected Sub btnSaveChanges_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnSaveChanges.Click");
             strB.AppendLine(Strings.Space((int)tab.XX) + "If Not validateForm() Then Exit Sub");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "Dim my" + pClass.Name.Capitalized + " As " + pClass.NameSpaceVariable.Name + "."
-                            + pClass.Name.Capitalized + " = get" + pClass.Name.Capitalized + "FromQueryString()");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "Dim my" + pClass.Name.Capitalized() + " As " + pClass.NameSpaceVariable.Name + "."
+                            + pClass.Name.Capitalized() + " = get" + pClass.Name.Capitalized() + "FromQueryString()");
         }
         else
         {
@@ -340,8 +340,8 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.X) + "protected void btnSaveChanges_Click(object sender, System.EventArgs e)");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
             strB.AppendLine(Strings.Space((int)tab.XX) + "if (!validateForm()) return;");
-            strB.AppendLine(Strings.Space((int)tab.XX) + pClass.NameSpaceVariable.Name + "." + pClass.Name.Capitalized + " my" + pClass.Name.Capitalized
-                            + " = get" + pClass.Name.Capitalized + "FromQueryString();");
+            strB.AppendLine(Strings.Space((int)tab.XX) + pClass.NameSpaceVariable.Name + "." + pClass.Name.Capitalized() + " my" + pClass.Name.Capitalized()
+                            + " = get" + pClass.Name.Capitalized() + "FromQueryString();");
         }
         bool doubleExists = false;
         bool integerExists = false;
@@ -351,65 +351,67 @@ public class WebFormGenerator
             if (!classVar.DisplayOnEditPage || !classVar.IsDatabaseBound)
                 continue;
             if (classVar.IsCheckBox)
-                strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + " = " + classVar.DefaultHTMLName + ".Checked" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + " = " 
+                    + classVar.DefaultHTMLName + ".Checked" + lineEnd);
             else if (classVar.IsTextBox)
             {
                 if (classVar.IsDouble)
                 {
                     if (!doubleExists)
                     {
-                        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempDouble As Double", "double tempDouble;").ToString());
+                        strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Dim tempDouble As Double": "double tempDouble;"));
                         doubleExists = true;
                     }
                     strB.AppendLine(Strings.Space((int)tab.XX) + "Double.TryParse(" + classVar.DefaultHTMLName + ".Text, tempDouble)" + lineEnd);
-                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + " = tempDouble" + lineEnd);
+                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + " = tempDouble" + lineEnd);
                 }
                 else if (classVar.IsInteger)
                 {
                     if (!integerExists)
                     {
-                        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempInteger As Integer", "int tempInteger;").ToString());
+                        strB.AppendLine(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Dim tempInteger As Integer": "int tempInteger;"));
                         integerExists = true;
                     }
-                    strB.Append(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Integer", "int").ToString());
+                    strB.Append(Strings.Space((int)tab.XX) + (lang == language.VisualBasic? "Integer": "int"));
                     strB.AppendLine(".TryParse(" + classVar.DefaultHTMLName + ".Text, tempInteger)" + lineEnd);
-                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + " = tempInteger" + lineEnd);
+                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + " = tempInteger" + lineEnd);
                 }
                 else if (classVar.ParameterType.IsNameAlias)
-                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + ".TextUnFormatted = txt" + classVar.Name + ".Text" + lineEnd);
+                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + ".TextUnFormatted = txt" + classVar.Name + ".Text" + lineEnd);
                 else
-                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + " = txt" + classVar.Name + ".Text" + lineEnd);
+                    strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + " = txt" + classVar.Name + ".Text" + lineEnd);
             }
             else if (classVar.IsDropDownList)
             {
-                strB.Append(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized);
+                strB.Append(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized());
                 if (classVar.ParameterType.AssociatedProjectClass != null)
-                    strB.Append("." + classVar.ParameterType.AssociatedProjectClass.NameForKeyAlias.Capitalized);
-                strB.AppendLine(" = " + IIf(lang == language.VisualBasic, cg.getConvertFunction("Integer", lang), "int.Parse").ToString()
+                    strB.Append("." + classVar.ParameterType.AssociatedProjectClass.NameForKeyAlias.Capitalized());
+                strB.AppendLine(" = " + (lang == language.VisualBasic? cg.getConvertFunction("Integer", lang): "int.Parse")
                                 + "(" + classVar.DefaultHTMLName + ".SelectedValue)" + lineEnd);
             }
             else if (classVar.IsDate)
             {
                 if (!dateExists)
-                    strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Dim tempDateTime As DateTime", "DateTime tempDateTime;").ToString());
+                    strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "Dim tempDateTime As DateTime", "DateTime tempDateTime;"));
                 strB.AppendLine(Strings.Space((int)tab.XX) + "DateTime.TryParse(" + classVar.GetMonthTextControlName() + ".Text.Trim() & \"/\" & " + classVar.getDayTextControlName() + ".Text.Trim() & \"/\" & " + classVar.getYearTextControlName() + ".Text.Trim(), tempDateTime)" + lineEnd);
-                strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized + "." + classVar.Name + " = tempDateTime" + lineEnd);
+                strB.AppendLine(Strings.Space((int)tab.XX) + "my" + pClass.Name.Capitalized() + "." + classVar.Name + " = tempDateTime" + lineEnd);
                 dateExists = true;
             }
         }
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "If my" + pClass.Name.Capitalized + ".ID = -1 Then", "if (my" + pClass.Name.Capitalized + ".ID == -1)").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "If my" + pClass.Name.Capitalized() + ".ID = -1 Then",
+                                                                            "if (my" + pClass.Name.Capitalized() + ".ID == -1)"));
         if (lang == language.CSharp)
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "add" + pClass.Name.Capitalized + "(my" + pClass.Name.Capitalized + ")" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "add" + pClass.Name.Capitalized() + "(my" + pClass.Name.Capitalized() + ")" + lineEnd);
         if (lang == language.CSharp)
             strB.Append("}");
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Else", "else").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "Else", "else"));
         if (lang == language.CSharp)
             strB.Append("{");
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "update" + pClass.Name.Capitalized + "(my" + pClass.Name.Capitalized + ")" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End If", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "update" + pClass.Name.Capitalized() + "(my" + pClass.Name.Capitalized() + ")" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "End If", "}"));
         strB.AppendLine(Strings.Space((int)tab.XX) + "Redirect(\"" + pClass.Name.PluralAndCapitalized + ".aspx\")" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End Sub", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "End Sub", "}"));
 
         strB.AppendLine();
 
@@ -420,25 +422,25 @@ public class WebFormGenerator
         StringBuilder strB = new StringBuilder();
         if (lang == language.VisualBasic)
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function add" + pClass.Name.Capitalized + "(ByVal my" + pClass.Name.Capitalized + " As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + ") As Boolean");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized + ".dbAdd() > 0 Then");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Add))");
+            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function add" + pClass.Name.Capitalized() + "(ByVal my" + pClass.Name.Capitalized() + " As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + ") As Boolean");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized() + ".dbAdd() > 0 Then");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Add))");
             strB.AppendLine(Strings.Space((int)tab.XX) + "Else");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Add))");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Add))");
             strB.AppendLine(Strings.Space((int)tab.XX) + "End If");
             strB.AppendLine(Strings.Space((int)tab.X) + "End Function");
         }
         else
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "private bool add" + pClass.Name.Capitalized + "(" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + " my" + pClass.Name.Capitalized + ")");
+            strB.AppendLine(Strings.Space((int)tab.X) + "private bool add" + pClass.Name.Capitalized() + "(" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + " my" + pClass.Name.Capitalized() + ")");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized + ".dbAdd() > 0)");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized() + ".dbAdd() > 0)");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Add));");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Add));");
             strB.AppendLine(Strings.Space((int)tab.XX) + "}");
             strB.AppendLine(Strings.Space((int)tab.XX) + "else");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Add));");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Add));");
             strB.AppendLine(Strings.Space((int)tab.XX) + "}");
             strB.AppendLine(Strings.Space((int)tab.X) + "}");
         }
@@ -449,25 +451,25 @@ public class WebFormGenerator
         StringBuilder strB = new StringBuilder();
         if (lang == language.VisualBasic)
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function update" + pClass.Name.Capitalized + "(ByVal my" + pClass.Name.Capitalized + " As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + ") As Boolean");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized + ".dbUpdate() > 0 Then");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Edit))");
+            strB.AppendLine(Strings.Space((int)tab.X) + "Private Function update" + pClass.Name.Capitalized() + "(ByVal my" + pClass.Name.Capitalized() + " As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + ") As Boolean");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "If my" + pClass.Name.Capitalized() + ".dbUpdate() > 0 Then");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Edit))");
             strB.AppendLine(Strings.Space((int)tab.XX) + "Else");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Edit))");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Edit))");
             strB.AppendLine(Strings.Space((int)tab.XX) + "End If");
             strB.AppendLine(Strings.Space((int)tab.X) + "End Function");
         }
         else
         {
-            strB.AppendLine(Strings.Space((int)tab.X) + "private bool update" + pClass.Name.Capitalized + "(" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + " my" + pClass.Name.Capitalized + ")");
+            strB.AppendLine(Strings.Space((int)tab.X) + "private bool update" + pClass.Name.Capitalized() + "(" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + " my" + pClass.Name.Capitalized() + ")");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized + ".dbUpdate() > 0)");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "if (my" + pClass.Name.Capitalized() + ".dbUpdate() > 0)");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Edit));");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addSuccess(StringToolkit.getDatabaseSuccessString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Edit));");
             strB.AppendLine(Strings.Space((int)tab.XX) + "}");
             strB.AppendLine(Strings.Space((int)tab.XX) + "else");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized + ", AliasGroup.Edit));");
+            strB.AppendLine(Strings.Space((int)tab.XXX) + "SessionVariables.addError(StringToolkit.getDatabaseErrorString(AliasGroup." + pClass.Name.Capitalized() + ", AliasGroup.Edit));");
             strB.AppendLine(Strings.Space((int)tab.XX) + "}");
             strB.AppendLine(Strings.Space((int)tab.X) + "}");
         }
@@ -478,7 +480,7 @@ public class WebFormGenerator
     {
         StringBuilder strB = new StringBuilder();
         strB.Append(cg.getPageImports(lang));
-        strB.Append(cg.getClassDeclaration(lang, "_Edit" + pClass.Name.Capitalized, tab.None, "BasePage"));
+        strB.Append(cg.getClassDeclaration(lang, "_Edit" + pClass.Name.Capitalized(), tab.None, "BasePage"));
         strB.AppendLine();
         strB.AppendLine(getPageLoadForEdit(pClass, lang));
         strB.AppendLine(getPageInstructions(lang));
@@ -489,7 +491,7 @@ public class WebFormGenerator
         strB.AppendLine(getSaveChanges(pClass, lang));
         strB.AppendLine(getAddObject(pClass, lang));
         strB.AppendLine(getUpdateObject(pClass, lang));
-        strB.AppendLine(IIf(lang == language.VisualBasic, "End Class", "}").ToString());
+        strB.AppendLine(cg.GetByLanguage(lang, "End Class", "}"));
         return strB.ToString();
     }
     public string getViewCodeBehind(ProjectClass pClass, language lang)
@@ -517,7 +519,7 @@ public class WebFormGenerator
         strB.AppendLine(Strings.Space((int)tab.XX) + "fillFieldsFromSiteConfig()" + lineEnd);
         strB.AppendLine(Strings.Space((int)tab.XX) + "fillPageInstructions()" + lineEnd);
 
-        strB.AppendLine(Strings.Space((int)tab.X) + IIf(lang == language.VisualBasic, "End Sub", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.X) + cg.GetByLanguage(lang, "End Sub", "}"));
 
         strB.AppendLine(Strings.Space((int)tab.X) + getPageInstructions(lang));
         // fillTable
@@ -525,9 +527,9 @@ public class WebFormGenerator
         {
             strB.AppendLine(Strings.Space((int)tab.X) + "Private Sub fill" + pClass.Name.PluralAndCapitalized + "Table()");
             strB.AppendLine(Strings.Space((int)tab.XX) + "Dim alternateRow As Boolean = False");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "Dim listOfObjects As List(Of " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized
+            strB.AppendLine(Strings.Space((int)tab.XX) + "Dim listOfObjects As List(Of " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
                             + ") = " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name + ".Get" + pClass.Name.PluralAndCapitalized + "()");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "For Each myObject As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + " In listOfObjects");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "For Each myObject As " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + " In listOfObjects");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim tRow As New TableRow");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "If alternateRow Then tRow.CssClass=\"other\"");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "alternateRow = Not alternateRow");
@@ -537,10 +539,10 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.X) + "private void fill" + pClass.Name.PluralAndCapitalized + "Table()");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
             strB.AppendLine(Strings.Space((int)tab.XX) + "bool alternateRow = false;");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "List<" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized
+            strB.AppendLine(Strings.Space((int)tab.XX) + "List<" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized()
                             + "> listOfObjects = " + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.DALClassVariable.Name
                             + ".Get" + pClass.Name.PluralAndCapitalized + "();");
-            strB.AppendLine(Strings.Space((int)tab.XX) + "foreach (" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized + " myObject in listOfObjects)");
+            strB.AppendLine(Strings.Space((int)tab.XX) + "foreach (" + pClass.NameSpaceVariable.NameBasedOnID + "." + pClass.Name.Capitalized() + " myObject in listOfObjects)");
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "TableRow tRow = new TableRow();");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "if (alternateRow) tRow.CssClass=\"other\";");
@@ -564,10 +566,10 @@ public class WebFormGenerator
                 strB.Append(".ToString()");
             strB.AppendLine("))" + lineEnd);
         }
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "tRow.Controls.Add(TableToolkit.getHyperlinkCell(AliasGroup.Edit.Capitalized, \"Edit"
-                        + pClass.Name.Capitalized + ".aspx?id=\" " + conCat + " myObject.ID.ToString()))" + lineEnd);
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "tRow.Controls.Add(TableToolkit.getHyperlinkCell(AliasGroup.Edit.Capitalized(), \"Edit"
+                        + pClass.Name.Capitalized() + ".aspx?id=\" " + conCat + " myObject.ID.ToString()))" + lineEnd);
         strB.AppendLine(Strings.Space((int)tab.XXX) + "tbl" + pClass.Name.PluralAndCapitalized + ".Rows.Add(tRow)" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "Next", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "Next", "}"));
         if (lang == language.VisualBasic)
         {
             strB.AppendLine(Strings.Space((int)tab.XX) + "If listOfObjects.Count = 0 Then");
@@ -579,17 +581,17 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.XX) + "{");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "TableRow tRow = new TableRow();");
         }
-        strB.AppendLine(Strings.Space((int)tab.XXX) + "tRow.Controls.Add(TableToolkit.getNoResultsFoundCell(AliasGroup." + pClass.Name.Capitalized
+        strB.AppendLine(Strings.Space((int)tab.XXX) + "tRow.Controls.Add(TableToolkit.getNoResultsFoundCell(AliasGroup." + pClass.Name.Capitalized()
                         + ", " + countOfColumns + "))" + lineEnd);
         strB.AppendLine(Strings.Space((int)tab.XXX) + "tbl" + pClass.Name.PluralAndCapitalized + ".Rows.Add(tRow)" + lineEnd);
-        strB.AppendLine(Strings.Space((int)tab.XX) + IIf(lang == language.VisualBasic, "End If", "}").ToString());
-        strB.AppendLine(Strings.Space((int)tab.X) + IIf(lang == language.VisualBasic, "End Sub", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang, "End If", "}"));
+        strB.AppendLine(Strings.Space((int)tab.X) + cg.GetByLanguage(lang, "End Sub", "}"));
 
         if (lang == language.VisualBasic)
         {
             strB.AppendLine(Strings.Space((int)tab.X) + "Private Sub fillFieldsFromSiteConfig()");
             strB.AppendLine(Strings.Space((int)tab.X) + "'TODO: Fill Site Variables on " + pClass.Name.PluralAndCapitalized + ".aspx");
-            strB.AppendLine(Strings.Space((int)tab.X) + "hypAdd" + pClass.Name.Capitalized + ".Text = \"Add \" & AliasGroup." + pClass.Name.Capitalized + ".Capitalized");
+            strB.AppendLine(Strings.Space((int)tab.X) + "hypAdd" + pClass.Name.Capitalized() + ".Text = \"Add \" & AliasGroup." + pClass.Name.Capitalized() + ".Capitalized()");
             strB.AppendLine(Strings.Space((int)tab.X) + "End Sub");
         }
         else
@@ -597,11 +599,11 @@ public class WebFormGenerator
             strB.AppendLine(Strings.Space((int)tab.X) + "private void fillFieldsFromSiteConfig()");
             strB.AppendLine(Strings.Space((int)tab.X) + "{");
             strB.AppendLine(Strings.Space((int)tab.X) + "//TODO: Fill Site Variables on " + pClass.Name.PluralAndCapitalized + ".aspx");
-            strB.AppendLine(Strings.Space((int)tab.X) + "hypAdd" + pClass.Name.Capitalized + ".Text = \"Add \" & AliasGroup." + pClass.Name.Capitalized + ".Capitalized;");
+            strB.AppendLine(Strings.Space((int)tab.X) + "hypAdd" + pClass.Name.Capitalized() + ".Text = \"Add \" & AliasGroup." + pClass.Name.Capitalized() + ".Capitalized();");
             strB.AppendLine(Strings.Space((int)tab.X) + "}");
         }
 
-        strB.AppendLine(Strings.Space((int)tab.X) + IIf(lang == language.VisualBasic, "End Class", "}").ToString());
+        strB.AppendLine(Strings.Space((int)tab.X) + cg.GetByLanguage(lang, "End Class", "}"));
 
         return strB.ToString();
     }
@@ -615,8 +617,8 @@ public class WebFormGenerator
     public string getViewBody(ProjectClass pClass)
     {
         StringBuilder strB = new StringBuilder();
-        strB.AppendLine(Strings.Space((int)tab.X) + "<asp:Hyperlink ID=\"hypAdd" + pClass.Name.Capitalized + "\" runat=\"server\" NavigateUrl=\"Edit"
-                        + pClass.Name.Capitalized + ".aspx?id=-1\"></asp:Hyperlink>");
+        strB.AppendLine(Strings.Space((int)tab.X) + "<asp:Hyperlink ID=\"hypAdd" + pClass.Name.Capitalized() + "\" runat=\"server\" NavigateUrl=\"Edit"
+                        + pClass.Name.Capitalized() + ".aspx?id=-1\"></asp:Hyperlink>");
         strB.AppendLine(Strings.Space((int)tab.X) + "<asp:Table ID=\"tbl" + pClass.Name.PluralAndCapitalized + "\" runat=\"server\" CssClass=\"list\">");
         strB.AppendLine(Strings.Space((int)tab.XX) + "<asp:TableHeaderRow>");
         foreach (ClassVariable classVar in pClass.ClassVariables)
@@ -642,7 +644,7 @@ public class WebFormGenerator
         {
             codeExt = "cs"; codeVer = "C#";
         }
-        string pageName = IIf(pVersion == pageVersion.Edit, "Edit" + pClass.Name.Capitalized, pClass.Name.PluralAndCapitalized).ToString();
+        string pageName = pVersion == pageVersion.Edit ? "Edit" + pClass.Name.Capitalized() : pClass.Name.PluralAndCapitalized;
 
         return string.Format("<%@ Page Title=\"\" Language=\"{3}\" MasterPageFile=\"~/{0}\" AutoEventWireup=\"false\" CodeFile=\"~/{1}.aspx.{2}"
                                 + "\" Inherits=\"_{1}\" %>", pClass.MasterPage.FileName, pageName, codeExt, codeVer);
@@ -657,10 +659,10 @@ public class WebFormGenerator
     // End Function
     private string generateEditBody(ProjectClass pClass, bool useLists, language lang)
     {
-        string formTag = Interaction.IIf(useLists, "ul", "div").ToString();
-        string rowTag = Interaction.IIf(useLists, "li", "div").ToString();
-        string rowBtnOpenTag = Interaction.IIf(useLists, "", "<div>").ToString();
-        string rowBtnCloseTag = Interaction.IIf(useLists, "", "</div>").ToString();
+        string formTag = useLists ? "ul": "div";
+        string rowTag = useLists ? "li": "div";
+        string rowBtnOpenTag = useLists ? "": "<div>";
+        string rowBtnCloseTag = useLists ? "": "</div>";
         StringBuilder retStrB = new StringBuilder();
         retStrB.AppendLine("<" + formTag + " class=\"form\">");
         foreach (ClassVariable classVar in pClass.ClassVariables)
@@ -668,7 +670,7 @@ public class WebFormGenerator
             if (!classVar.DisplayOnEditPage)
                 continue;
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "<" + rowTag + ">");
-            retStrB.Append(Strings.Space((int)tab.XXX) + "<asp:Label ID=\"lbl" + IIf(classVar.Name.ToLower().CompareTo("subtitle") == 0, pClass.Name, "").ToString()
+            retStrB.Append(Strings.Space((int)tab.XXX) + "<asp:Label ID=\"lbl" + (classVar.Name.ToLower().CompareTo("subtitle") == 0 ? pClass.Name.ToString() : "")
                                + classVar.Name + "\" runat=\"server\" AssociatedControlID=\"");
             if (classVar.IsInteger || classVar.IsDouble)
             {
@@ -697,7 +699,7 @@ public class WebFormGenerator
             }
             else if (classVar.IsTextBox)
             {
-                if (classVar.ParameterType.Name.ToLower == "namealias")
+                if (classVar.ParameterType.Name().ToLower() == "namealias")
                 {
                     retStrB.AppendLine("txt" + classVar.Name + "\">" + classVar.Name + "</asp:Label>");
                     retStrB.AppendLine(Strings.Space((int)tab.XXX) + "<asp:TextBox ID=\"txt" + classVar.Name + "\" runat=\"server\"></asp:TextBox>");
@@ -723,9 +725,9 @@ public class WebFormGenerator
         }
         retStrB.AppendLine(Strings.Space((int)tab.XX) + "<" + rowTag + " class=\"buttons\">");
         retStrB.AppendLine(Strings.Space((int)tab.XXX) + rowBtnOpenTag + "<asp:Button ID=\"btnSaveChanges\" runat=\"server\" Text=\"Save Changes\" "
-                           + IIf(lang == language.CSharp, "OnClick=\"btnSaveChanges_Click\" ", "").ToString() + "/>" + rowBtnCloseTag);
+                           + cg.GetByLanguage(lang ,"", "OnClick=\"btnSaveChanges_Click\" ").ToString() + "/>" + rowBtnCloseTag);
         retStrB.AppendLine(Strings.Space((int)tab.XXX) + rowBtnOpenTag + "<asp:Button ID=\"btnCancel\" runat=\"server\" Text=\"Cancel\" "
-                           + IIf(lang == language.CSharp, "OnClick=\"btnCancel_Click\" ", "").ToString() + "/>" + rowBtnCloseTag);
+                           + cg.GetByLanguage(lang,"", "OnClick=\"btnCancel_Click\" ").ToString() + "/>" + rowBtnCloseTag);
         retStrB.AppendLine(Strings.Space((int)tab.XX) + "</" + rowTag + ">");
         retStrB.AppendLine(Strings.Space((int)tab.X) + "</" + formTag + ">");
         return retStrB.ToString();

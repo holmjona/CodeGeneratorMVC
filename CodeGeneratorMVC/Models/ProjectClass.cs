@@ -14,7 +14,7 @@ using System.ComponentModel;
 using Words;
 
 [Serializable()]
-public class ProjectClass : INotifyPropertyChanged {
+public class ProjectClass {//: INotifyPropertyChanged {
     [NonSerialized()]
     private NameAlias _Name;
     private string _NameString;
@@ -125,7 +125,7 @@ public class ProjectClass : INotifyPropertyChanged {
         }
         set {
             _Name = value;
-            _NameString = value.Capitalized;
+            _NameString = value.Capitalized();
             this.NotifyPropertyChanged("Name");
         }
     }
@@ -155,7 +155,7 @@ public class ProjectClass : INotifyPropertyChanged {
     }
     public string NameWithNameSpace {
         get {
-            return NameSpaceVariable.NameBasedOnID + "." + Name.Capitalized;
+            return NameSpaceVariable.NameBasedOnID + "." + Name.Capitalized();
         }
     }
     public DALClass DALClassVariable {
@@ -239,7 +239,7 @@ public class ProjectClass : INotifyPropertyChanged {
     }
 
     public override string ToString() {
-        return _Name.Capitalized;
+        return _Name.Capitalized();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -250,7 +250,7 @@ public class ProjectClass : INotifyPropertyChanged {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
     public override bool Equals(object obj) {
-        if (obj == null | !this.GetType() == obj.GetType())
+        if (obj == null | this.GetType() != obj.GetType())
             return false;
         ProjectClass pc = (ProjectClass)obj;
         return pc.ID == this.ID;

@@ -43,14 +43,9 @@ public class CodeGeneration {
         XXXXXXXX = 32
     }
     public static string getCommentString(CodeGeneration.Language lang, bool isSummary = false) {
-        if (lang == CodeGeneration.Language.VisualBasic) {
-            if (isSummary)
-                return "'''";
-            return "'";
-        }
-        if (isSummary)
-            return "///";
-        return "//";
+        return GetByLanguage(lang,
+            isSummary ?  "'''": "'",
+            isSummary ? "///" : "//");
     }
     public static string getSqlDataTypeConversion(string datatype) {
         string retString = "";
@@ -195,9 +190,7 @@ public class CodeGeneration {
     }
 
     public static string getMetaDataText(string comment, bool isProperty, int indentationOffset, Language lang, string returnType = "", string namSpace = "") {
-        string commString = "'''";
-        if (lang == Language.CSharp)
-            commString = "///";
+        string commString = getCommentString(lang, true);
         StringBuilder strB = new StringBuilder();
         if (comment.Length == 0) {
             strB.AppendLine(Strings.Space(indentationOffset) + commString + " <summary>");
@@ -219,16 +212,12 @@ public class CodeGeneration {
     }
 
     public static string getRegionStart(Language lang, string name) {
-        if (lang == Language.VisualBasic)
-            return "#Region \"" + name + "\"";
-        else
-            return "#region " + name;
+        return GetByLanguage(lang,
+            "#Region \"" + name + "\"",
+             "#region " + name);
     }
     public static string getRegionEnd(Language lang) {
-        if (lang == Language.VisualBasic)
-            return "#End Region";
-        else
-            return "#endregion";
+        return GetByLanguage(lang, "#End Region", "#endregion");
     }
 
     public static string getClassDeclaration(Language lang, string className, Tabs offset, string inheritedClassName = "") {
@@ -284,4 +273,9 @@ public class CodeGeneration {
         }
         return retStr.Trim();
     }
+
+    public static string GetByLanguage(Language lang, string vbString, string cSharpString) {
+        return lang == Language.VisualBasic ? vbString : cSharpString;
+    }
+
 }

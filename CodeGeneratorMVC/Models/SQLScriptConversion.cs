@@ -9,9 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualBasic;
-using IRICommonObjects.Words;
+using Words;
 using System.Windows;
+using Microsoft.VisualBasic;
 using language = CodeGeneration.Language;
 
 public class SQLScriptConversion {
@@ -65,7 +65,7 @@ public class SQLScriptConversion {
     }
 
 
-    public static List<ProjectClass> generateObjects(string fileName) {
+    public static List<ProjectClass> generateObjects(string fileName, ref List<string> messages) {
         System.IO.StreamReader myRead = System.IO.File.OpenText(fileName);
 
         string myString = myRead.ReadToEnd();
@@ -85,15 +85,15 @@ public class SQLScriptConversion {
 
         // remove issues that may arise from line breaks.
         myString = myString.Replace(Constants.vbCrLf, " ");
-        myString = myString.Replace(Strings.Chr(10), " ");
-        myString = myString.Replace(Strings.Chr(13), " ");
+        myString = myString.Replace(Strings.Chr(10), ' ');
+        myString = myString.Replace(Strings.Chr(13), ' ');
 
         while (myString.IndexOf("CREATE TABLE", StringComparison.OrdinalIgnoreCase) > -1) {
             // for each line remove create table statement.
             myString = myString.Remove(0, myString.IndexOf("CREATE TABLE", StringComparison.OrdinalIgnoreCase));
             myString = myString.Remove(0, 12);
             string extractedText = ExtractCreateTableStatement(myString);
-            ProjectClass pClass = ExtractProjectClass(ref extractedText, ID);
+            ProjectClass projClass = ExtractProjectClass(ref extractedText, ID);
             // If StaticVariables.Instance.DALs.Count > 0 Then
             // pClass.DALClassVariable = StaticVariables.Instance.DALs(0)
             // End If
@@ -106,11 +106,11 @@ public class SQLScriptConversion {
             // End If
 
             // ' See if this is the Alias Group Table/Object
-            pClass.IsAssociatedWithAliasGroup = pClass.Name.Capitalized.ToLower().Contains("alias");
-            if (pClass.IsAssociatedWithAliasGroup)
-                pAliasGroupClass = pClass;
+            projClass.IsAssociatedWithAliasGroup = projClass.Name.Capitalized().ToLower().Contains("alias");
+            if (projClass.IsAssociatedWithAliasGroup)
+                pAliasGroupClass = projClass;
 
-            retList.Add(pClass);
+            retList.Add(projClass);
             ID += 1;
         }
 
@@ -126,23 +126,28 @@ public class SQLScriptConversion {
         }
 
         bool doesVariableExist = false;
-        foreach (ProjectClass pClass in retList) {
+        ProjectClass pClass;
+
+        for (int i = 0; i < retList.Count; i++) {
+            pClass = retList[i];
             doesVariableExist = false;
             int _ID = 1;
-
-            foreach (string variableSQLText in pClass.OriginalSQLText.Split(',')) {
+                string[] textSplit = pClass.OriginalSQLText.Split(',');
+            for(int n = 0; n < textSplit.Length; n++) {
+            string variableSQLText = textSplit[n].Trim();
                 try {
-                    ClassVariable newVar = ExtractClassVariable(ref pClass, ref variableSQLText.Trim(), _ID);
+                    ClassVariable newVar = ExtractClassVariable(ref pClass, ref variableSQLText, _ID);
                     if (newVar != null)
                         pClass.ClassVariables.Add(newVar);
                 } catch (Exception ex) {
-                    Interaction.MsgBox(ex.Message);
+                    messages.Add(ex.Message);
                 }
 
                 _ID += 1;
             }
             // create the alias group variable for this object.
-            ClassVariable myVariable = new ClassVariable(pAliasGroupClass, pClass.Name.Capitalized, StaticVariables.Instance.GetDataType("namealias"), false, false, false, false, false, true, true, pAliasGroupClass.ClassVariables.Count, false, false, "String", -1, pClass.Name.Capitalized);
+            ClassVariable myVariable = new ClassVariable(pAliasGroupClass, pClass.Name.Capitalized(), StaticVariables.Instance.GetDataType("namealias"), 
+                false, false, false, false, false, true, true, pAliasGroupClass.ClassVariables.Count, false, false, "String", -1, pClass.Name.Capitalized());
             // check to see if alias already exists
             foreach (ClassVariable cVariable in pAliasGroupClass.ClassVariables) {
                 if (cVariable.Name.ToLower().CompareTo(myVariable.Name.ToLower()) == 0) {
@@ -159,11 +164,11 @@ public class SQLScriptConversion {
         // '   are only an association between two other classes.
         bool IsAssociativeClass;
         string failedObjects = "";
-        foreach (ProjectClass pClass in retList) {
+        foreach (ProjectClass projClass in retList) {
             IsAssociativeClass = true;
-            foreach (ClassVariable cVar in pClass.ClassVariables) {
+            foreach (ClassVariable cVar in projClass.ClassVariables) {
                 if (!cVar.IsIDField) {
-                    IsAssociativeClass = IsAssociativeClass & cVar.isForeignKey;
+                    IsAssociativeClass = IsAssociativeClass & cVar.IsForeignKey;
                     if (!IsAssociativeClass)
                         break;
                 }
@@ -171,17 +176,17 @@ public class SQLScriptConversion {
 
             if (IsAssociativeClass) {
                 try {
-                    pClass.IsAssociateEntitiy = true;
-                    pClass.ClassObjectIsNotNeeded = true;
+                    projClass.IsAssociateEntitiy = true;
+                    projClass.ClassObjectIsNotNeeded = true;
                     // ' move classes to appropriate objects.
-                    AddAssociationsToAppropriateClasses(pClass, ref retList);
+                    AddAssociationsToAppropriateClasses(projClass, ref retList);
                 } catch {
-                    failedObjects += pClass.Name.Capitalized + Constants.vbCrLf;
+                    failedObjects += projClass.Name.Capitalized() + Constants.vbCrLf;
                 }
             }
         }
         if (failedObjects != "")
-            Interaction.MsgBox(failedObjects);
+            messages.Add(failedObjects);
 
         // ' Make sure we have the default Add, Edit, and Delete Aliases
         string[] listOfDefaultAliases = new[] { "Add", "Edit", "Delete" }; // {"AddAlias", "EditAlias", "DeleteAlias"}
@@ -213,12 +218,12 @@ public class SQLScriptConversion {
     }
     private static ProjectClass getClass(ClassVariable cVar) {
         if (cVar.ParameterType.AssociatedProjectClass == null)
-            cVar.ParameterType = StaticVariables.Instance.GetDataType(cVar.ParameterType.Name);
+            cVar.ParameterType = StaticVariables.Instance.GetDataType(cVar.ParameterType.Name());
         return cVar.ParameterType.AssociatedProjectClass;
     }
     private static ProjectClass getClass(DataType pType) {
         if (pType.AssociatedProjectClass == null)
-            pType = StaticVariables.Instance.GetDataType(pType.Name);
+            pType = StaticVariables.Instance.GetDataType(pType.Name());
         return pType.AssociatedProjectClass;
     }
     private static string ExtractCreateTableStatement(string text) {
@@ -267,7 +272,7 @@ public class SQLScriptConversion {
         // End If
 
         // End While
-        if (textForTable.Length > 0 && textForTable[textForTable.Length - 1] == ")")
+        if (textForTable.Length > 0 && textForTable[textForTable.Length - 1] == ')')
             textForTable = textForTable.Remove(textForTable.Length - 1, 1);
 
         return textForTable;
@@ -288,7 +293,7 @@ public class SQLScriptConversion {
             textName = textName.Remove(0, indexOfPeriod + 1);
         retProjectClass.DatabaseTableName = textName;
         string newString = NameAlias.getTextWithFormatting(textName);
-        string singularVersion = IRICommonObjects.Words.PluralityDictionary.getPluralityInverse(newString);
+        string singularVersion = Words.PluralityDictionary.getPluralityInverse(newString);
         retProjectClass.Name = new NameAlias(singularVersion);
         // Get rid of opening ( for Create table statement.)
         text = text.Remove(0, text.IndexOf("(") + 1);
@@ -367,12 +372,14 @@ public class SQLScriptConversion {
         string[] parameters = text.Split(' ');
 
         // if parameters is not long enough, it must not be a valid entry
-        if (!parameters.Length > 1)
+        if (parameters.Length <= 1)
             return null/* TODO Change to default(_) if this is not a reference type */;
 
         // strip empty (extra) spaces from each parameter
-        foreach (string param in parameters)
-            param = param.Trim();
+        for (int px = 0; px < parameters.Length; px++) {
+            parameters[px] = parameters[px].Trim();
+        }
+
         string parameterName = "";
         string fieldName = parameters[0];
         string sqlType = parameters[1];
@@ -397,7 +404,7 @@ public class SQLScriptConversion {
             // replace paramenter without parenthetical text.
             sqlType = sqlType.Remove(indexOfFirstParen, indexOfSecondParen - indexOfFirstParen + 1);
 
-            if (int.TryParse(lengthString, ref length)) {
+            if (int.TryParse(lengthString, out length)) {
             } else if (lengthString.ToLower() == "max") {
                 // technically max is only available for nvarchar, but will check just in case.
                 if (sqlType.ToLower() == "nvarchar")
@@ -430,7 +437,7 @@ public class SQLScriptConversion {
             else if (text.ToLower().Contains("foreign key")
                                  || fieldName.Substring(fieldName.Length - 2, 2).ToLower().CompareTo("fk") == 0)
                 isForeignKey = true;
-            else if (parameterName.ToLower() == retProjectClass.Name.Text.ToLower())
+            else if (parameterName.ToLower() == retProjectClass.Name.Text().ToLower())
                 // this is an ID that was not declared inline
                 isID = true;
             else
@@ -446,7 +453,7 @@ public class SQLScriptConversion {
                 if (indexOfRef > -1) {
                     string refString = parameters[indexOfRef + 1];
                     string tblName = refString.Substring(0, refString.IndexOf('('));
-                    string objName = IRICommonObjects.Words.PluralityDictionary.getPluralityInverse(tblName);
+                    string objName = Words.PluralityDictionary.getPluralityInverse(tblName);
                     dataType = StaticVariables.Instance.GetDataType(objName);
                 } else {
                     // otherwise use the FieldName to try and guess the object

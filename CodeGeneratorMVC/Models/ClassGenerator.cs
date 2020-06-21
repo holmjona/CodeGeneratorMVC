@@ -18,16 +18,13 @@ using System.Net.NetworkInformation;
 
 public class ClassGenerator {
     public static string getDataReaderText(ProjectClass pClass, bool overridesBase, language lang) {
-        if (lang == language.VisualBasic)
-            return getDataReaderTextInVB(pClass, overridesBase);
-        else
-            return getDataReaderTextInCSharp(pClass, overridesBase);
+        return cg.GetByLanguage(lang, getDataReaderTextInVB(pClass, overridesBase), getDataReaderTextInCSharp(pClass, overridesBase));
     }
     private static string getDataReaderTextInVB(ProjectClass pClass, bool overridesBase) {
         StringBuilder retStrB = new StringBuilder();
         if (pClass.Name.Text().Length > 0) {
             retStrB.Append(cg.getMetaDataText("Fills object from a SqlClient Data Reader", false, (int)tab.XX, language.VisualBasic));
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + Interaction.IIf(overridesBase, "Overrides ", "").ToString() + "Sub Fill(ByVal dr As Data.SqlClient.SqlDataReader)");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + (overridesBase? "Overrides ": "") + "Sub Fill(ByVal dr As Data.SqlClient.SqlDataReader)");
             foreach (ClassVariable classVar in pClass.ClassVariables) {
                 if (classVar.IsAssociative)
                     continue;
@@ -61,7 +58,7 @@ public class ClassGenerator {
         StringBuilder retStrB = new StringBuilder();
         if (pClass.Name.Text().Length > 0) {
             retStrB.Append(cg.getMetaDataText("Fills object from a SqlClient Data Reader", false, (int)tab.XX, language.CSharp));
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + Interaction.IIf(overridesBase, "override ", "").ToString() + "void Fill(System.Data.SqlClient.SqlDataReader dr)");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "void Fill(System.Data.SqlClient.SqlDataReader dr)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             foreach (ClassVariable classVar in pClass.ClassVariables) {
                 if (classVar.IsAssociative)
@@ -111,13 +108,13 @@ public class ClassGenerator {
             false, (int)tab.XX, lang, "Integer value greater than 0 if successful."));
 
         if (lang == language.VisualBasic) {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + Interaction.IIf(overridesBase, "Overrides ", "").ToString() 
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + (overridesBase? "Overrides ": "")
                 + "Function dbAdd() As Integer");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "_ID = " + dalName + ".Add" + objectName + "(Me)");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "Return ID");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "End Function");
         } else {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + Interaction.IIf(overridesBase, "override ", "").ToString() + "int dbAdd()");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "int dbAdd()");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "_ID = " + dalName + ".Add" + objectName + "(this);");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "return ID;");
@@ -127,15 +124,15 @@ public class ClassGenerator {
         return retStrB.ToString();
     }
     private static string getUpdateClassFunction(string dalName, string objectName, bool overridesBase, language lang) {
-        StringBuilder retStrB = new StringBuilder(cg.getMetaDataText("Calls DAL function to update " + objectName + " to the database.", false, 
+        StringBuilder retStrB = new StringBuilder(cg.getMetaDataText("Calls DAL function to update " + objectName + " to the database.", false,
             (int)tab.XX, lang, "Integer value greater than 0 if successful."));
         if (lang == language.VisualBasic) {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + Interaction.IIf(overridesBase, "Overrides ", "").ToString() 
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + (overridesBase? "Overrides ": "")
                 + "Function dbUpdate() As Integer");
             retStrB.AppendLine(Strings.Space((int)tab.XXX) + "Return " + dalName + ".Update" + objectName + "(Me)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "End Function");
         } else {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + Interaction.IIf(overridesBase, "override ", "").ToString() + "int dbUpdate()");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "int dbUpdate()");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "return " + dalName + ".Update" + objectName + "(this);");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "}");
@@ -145,15 +142,15 @@ public class ClassGenerator {
     }
     private static string getRemoveClassFunction(string dalName, string objectName, bool overridesBase, language lang) {
         overridesBase = false;
-        StringBuilder retStrB = new StringBuilder(cg.getMetaDataText("Calls DAL function to remove " + objectName + " from the database.", false, 
+        StringBuilder retStrB = new StringBuilder(cg.getMetaDataText("Calls DAL function to remove " + objectName + " from the database.", false,
             (int)tab.XX, lang, "Integer value greater than 0 if successful."));
         if (lang == language.VisualBasic) {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + Interaction.IIf(overridesBase, "Overrides ", "").ToString() 
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public " + (overridesBase? "Overrides ": "")
                 + "Function dbRemove() As Integer");
             retStrB.AppendLine(Strings.Space((int)tab.XXX) + "Return " + dalName + ".Remove" + objectName + "(Me)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "End Function");
         } else {
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + Interaction.IIf(overridesBase, "override ", "").ToString() + "int dbRemove()");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "int dbRemove()");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             retStrB.AppendLine(Strings.Space((int)tab.X + (int)tab.XX) + "return " + dalName + ".Remove" + objectName + "(this);");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "}");
@@ -193,7 +190,7 @@ public class ClassGenerator {
         }
         return retStrB.ToString();
     }
-    public static string getEntireClass(ProjectClass pClass, string creator, language lang, CodeGeneration.Format codeFormat,ref List<string> warnings) {
+    public static string getEntireClass(ProjectClass pClass, string creator, language lang, CodeGeneration.Format codeFormat, ref List<string> warnings) {
         StringBuilder retStrB = new StringBuilder();
         string namSpace = "";
         if (pClass.NameSpaceVariable != null)
@@ -204,10 +201,8 @@ public class ClassGenerator {
         string objName = pClass.Name.Capitalized();
         if (objName.Length > 0 & dalClassName.Length > 0) {
             if (objName.Length > 0) {
-                if (lang == language.VisualBasic)
-                    retStrB.Append(getEntireClassInVB(pClass, objName, namSpace, Comments, creator, codeFormat));
-                else
-                    retStrB.Append(getEntireClassInCSharp(pClass, objName, namSpace, Comments, creator, codeFormat));
+                retStrB.Append(cg.GetByLanguage(lang, getEntireClassInVB(pClass, objName, namSpace, Comments, creator, codeFormat),
+                    getEntireClassInCSharp(pClass, objName, namSpace, Comments, creator, codeFormat)));
             }
         } else {
             if (pClass.Name.Text().Length == 0)
@@ -332,10 +327,7 @@ public class ClassGenerator {
             false, (int)tab.XX, lang, mDataType.Name(), namSpace));
         string propertyAttribute = "";
         if (classVar.IsPropertyXMLIgnored) {
-            if (lang == language.VisualBasic)
-                propertyAttribute = "<XmlIgnore()> ";
-            else
-                propertyAttribute = "[XmlIgnore]";
+            propertyAttribute = cg.GetByLanguage(lang, "<XmlIgnore()> ", "[XmlIgnore]");
         }
 
         if (cg.isRegularDataType(mDataType.Name()) | DAL.Length == 0)
@@ -424,11 +416,11 @@ public class ClassGenerator {
         StringBuilder strB = new StringBuilder();
         var nameOfIDVariable = nameWithoutUnderscore + "ID";
         if (lang == language.VisualBasic)
-            strB.Append(getPropertyStringForDerivedObjectInVB(nameOfIDVariable, classVar, propertyAttribute,
-                nameWithoutUnderscore, nameWithUnderscore, mDataType));
-        else
-            strB.Append(getPropertyStringForDerivedObjectInCSharp(nameOfIDVariable, classVar, propertyAttribute,
-                nameWithoutUnderscore, nameWithUnderscore, mDataType));
+            strB.Append(cg.GetByLanguage(lang, 
+                getPropertyStringForDerivedObjectInVB(nameOfIDVariable, classVar, propertyAttribute,
+                        nameWithoutUnderscore, nameWithUnderscore, mDataType),
+                getPropertyStringForDerivedObjectInCSharp(nameOfIDVariable, classVar, propertyAttribute,
+                        nameWithoutUnderscore, nameWithUnderscore, mDataType)));
         int ID = 0;
         if (pClass.ClassVariables.Count > 0)
             ID = pClass.ClassVariables[pClass.ClassVariables.Count - 1].ID + 1;
@@ -548,21 +540,17 @@ public class ClassGenerator {
         StringBuilder retStrB = new StringBuilder();
         foreach (ClassVariable classVar in pClass.ClassVariables) {
             if (classVar.IsDatabaseBound) {
-                if (lang == language.VisualBasic)
-                    retStrB.AppendLine(Strings.Space((int)tab.XX) + "Friend Const db_" + classVar.Name
-+ " As String = \"" + classVar.DatabaseColumnName + "\"");
-                else
-                    retStrB.AppendLine(Strings.Space((int)tab.XX) + "internal const string db_" + classVar.Name
-                                   + "= \"" + classVar.DatabaseColumnName + "\";");
+                retStrB.AppendLine(Strings.Space((int)tab.XX) + cg.GetByLanguage(lang,
+                     "Friend Const db_" + classVar.Name + " As String = \"" + classVar.DatabaseColumnName + "\"",
+                     "internal const string db_" + classVar.Name + "= \"" + classVar.DatabaseColumnName + "\";"));
             }
         }
         return retStrB.ToString();
     }
     public static string getPrivateVariables(ProjectClass pClass, language lang) {
-        if (lang == language.VisualBasic)
-            return getPrivateVariablesInVB(pClass);
-        else
-            return getPrivateVariablesInCSharp(pClass);
+            return cg.GetByLanguage(lang,
+                getPrivateVariablesInVB(pClass),        
+                getPrivateVariablesInCSharp(pClass));
     }
     public static string getPrivateVariablesInVB(ProjectClass pClass) {
         StringBuilder retStrB = new StringBuilder();

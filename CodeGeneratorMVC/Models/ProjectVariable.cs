@@ -56,6 +56,6 @@ public class ProjectVariable {
         return pv1.ID == pv2.ID;
     }
     public static bool operator !=(ProjectVariable pv1, ProjectVariable pv2) {
-        return !pv1 == pv2;
+        return pv1 != pv2;
     }
 }

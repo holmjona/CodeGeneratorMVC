@@ -1,4 +1,6 @@
-﻿namespace Tools.SoundEx {
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Tools.SoundEx {
     /// <summary>
 	/// 	''' A SoundEx Algorithm that I made to be able to handle some of our needs.
 	/// 	''' #############################################################################
@@ -29,9 +31,9 @@
             for (int a = 0; a <= jDex1.Length - 1; a++) {
                 if (a == 0 && compareFirstLetter) {
                     // what if the first letters are comparable like c and k? this should handle that.
-                    if (getCharKey(jDex1.Chars[0], '#') == getCharKey(jDex2[0], '#'))
+                    if (getCharKey(jDex1[0], '#') == getCharKey(jDex2[0], '#'))
                         counter += 1;
-                } else if (jDex1.Chars[a] == jDex2.Chars[a])
+                } else if (jDex1[a] == jDex2[a])
                     counter += 1;// chars match
             }
             return counter;
@@ -52,40 +54,32 @@
                 return "0000";
             string strToReturn = "";
             str = str.ToLower();
-            char lastChar = str.Chars[0];
-            strToReturn = lastChar.ToString();
-            while (strToReturn < "a" | strToReturn > "z") {
+            char firstChar = str[0];
+            // remove starting characters that are not a letter. 
+            while (firstChar < 'a' || firstChar > 'z') {
+                // char is not a letter.
                 if (str.Length == 1) {
-                    if (strToReturn < "a" | strToReturn > "z")
-                        return "0000";
-                    else
-                        return str.Substring(0, 1) + "000";
+                    // no characters found in string 
+                    return "0000";
                 } else {
-                    strToReturn = str.Substring(0, 1);
+                    // omit first char and try next char.
                     str = str.Substring(1);
-                    lastChar = str.Chars[0];
+                    // get next first character.
+                    firstChar = str[0];
                 }
             }
 
-            if (str.Chars[str.Length - 1] == 's')
+            if (str[str.Length - 1] == 's')
                 str = str.Substring(0, str.Length - 1);
             foreach (char chStr in str) {
                 if (strToReturn.Length < 4) {
-                    int key = getCharKey(chStr, lastChar);
-                    switch (key) {
-                        case object _ when key > 0: {
-                                strToReturn += key.ToString();
-                                break;
-                            }
+                    int key = getCharKey(chStr, firstChar);
+                    if (key > 0) {
+                        strToReturn += key.ToString();
+                    } else if (key == -2) {
+                        firstChar = chStr;
+                    } else {
 
-                        case object _ when key == -2: {
-                                lastChar = chStr;
-                                break;
-                            }
-
-                        default: {
-                                break;
-                            }
                     }
                 } else
                     break;
@@ -105,136 +99,44 @@
 		/// 		''' <remarks></remarks>
         private static int getCharKey(char chr, char lastchar) {
             // TODO: does this Dex handle the 'sw' as in sword or answer?
-            switch (chr) {
-                case object _ when chr == lastchar // ignore repeating letters, or is that leters
-               : {
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'a':
-                case 'e':
-                case 'i':
-                case 'o':
-                case 'u':
-                case 'y': {
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'b':
-                case 'f':
-                case 'p':
-                case 'v': {
-                        switch (lastchar) {
-                            case object _ when lastchar == 'b':
-                            case 'f':
-                            case 'p':
-                            case 'v': {
-                                    break;
-                                    break;
-                                }
-
-                            default: {
-                                    return 1;
-                                }
-                        }
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'c':
-                case 'g':
-                case 'j':
-                case 'k':
-                case 'q':
-                case 's':
-                case 'x':
-                case 'z': {
-                        switch (lastchar) {
-                            case object _ when lastchar == 'c':
-                            case 'g':
-                            case 'j':
-                            case 'k':
-                            case 'q':
-                            case 's':
-                            case 'x':
-                            case 'z': {
-                                    break;
-                                    break;
-                                }
-
-                            default: {
-                                    return 2;
-                                }
-                        }
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'd':
-                case 't': {
-                        switch (lastchar) {
-                            case object _ when lastchar == 'd':
-                            case 't': {
-                                    break;
-                                    break;
-                                }
-
-                            default: {
-                                    return 3;
-                                }
-                        }
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'l': {
-                        return 4;
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'm':
-                case 'n': {
-                        switch (lastchar) {
-                            case object _ when lastchar == 'm':
-                            case 'n': {
-                                    break;
-                                    break;
-                                }
-
-                            default: {
-                                    return 5;
-                                }
-                        }
-                        break;
-                        break;
-                    }
-
-                case object _ when chr == 'r': {
-                        return 6;
-                        break;
-                        break;
-                    }
-
-                default: {
-                        break;
-                    }
+            if (chr == lastchar) {
+                // ignore repeating letters, or is that leters
+            } else if ("aeiouy".Contains(chr)) {
+                // ignore vowels
+            } else if ("bfpv".Contains(chr)) {
+                if ("bfpv".Contains(lastchar)) {
+                    // ignore duplicate
+                } else {
+                    return 1; // first sound
+                }
+            } else if ("cgjkqsxz".Contains(chr)) {
+                if ("cgjkqsxz".Contains(lastchar)){
+                    // ignore duplicate
+                } else {
+                    return 2; // second sound
+                }
+            } else if ("dt".Contains(chr)) {
+                if ("dt".Contains(chr)) {
+                    // ignore duplicate
+                } else {
+                    return 3; // third sound
+                }
+            } else if (chr == 'l') {
+                return 4; // forth sound
+            } else if ("mn".Contains(chr)){
+                if ("mn".Contains(lastchar)) {
+                    // ignore duplicate
+                } else {
+                    return 5; // fifth sound
+                }
+            } else if (chr == 'r') {
+                return 6; // sixth sound
+            } else if ("hw".Contains(chr)) {
+                // ignore soft sounds
+            } else {
+                return -2;
             }
-            switch (chr) {
-                case object _ when chr == 'h':
-                case 'w': {
-                        break;
-                        break;
-                    }
-
-                default: {
-                        // lastChar = chStr
-                        return -2;
-                    }
-            }
-            return -1;
+            return -1; // should never hit this.
         }
     }
 }
