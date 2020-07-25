@@ -258,7 +258,7 @@ public class ClassGenerator {
         retStrB.Append(getCodeBody(objName, pClass, properties, overridesBase, language.CSharp));
         retStrB.AppendLine(Strings.Space((int)tab.X) + "}");
         retStrB.AppendLine("}");
-
+        
         return retStrB.ToString();
     }
     private static string getCodeBody(string objName, ProjectClass pClass, string properties, bool overridesBaseObject, language lang) {

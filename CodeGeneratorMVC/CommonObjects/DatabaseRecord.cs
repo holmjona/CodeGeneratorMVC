@@ -54,15 +54,15 @@ public abstract class DatabaseRecord {
     public abstract void Fill(System.Data.SqlClient.SqlDataReader dr);
 
     public static bool operator ==(DatabaseRecord r1, DatabaseRecord r2) {
-        if (r1 == null && r2 == null)
+        if (ReferenceEquals(r1, null) && ReferenceEquals(r2, null))
             return true;
-        else if (r1 == null || r2 == null)
+        else if (ReferenceEquals(r1, null) || ReferenceEquals(r2, null))
             return false;
         else
             return r1.ID == r2.ID;
     }
     public static bool operator !=(DatabaseRecord r1, DatabaseRecord r2) {
-        return r1 != r2;
+        return !(r1 == r2);
     }
 
 

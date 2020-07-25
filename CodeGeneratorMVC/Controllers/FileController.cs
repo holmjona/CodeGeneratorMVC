@@ -21,10 +21,26 @@ namespace CodeGeneratorMVC.Controllers {
             }
             List<string> messages = new List<string>();
             List<ProjectClass> classes = SQLScriptConversion.generateObjects(fPath,ref messages);
+            ProjectVariable nameSpaceObject = new ProjectVariable(1, "CodeGeneratorObjects");
+            DALClass dalClassObject = getNewDAL(nameSpaceObject);
             foreach(ProjectClass pClass in classes) {
+                pClass.DALClassVariable = dalClassObject;
+                pClass.NameSpaceVariable = nameSpaceObject;
                 messages.Add(ClassGenerator.getEntireClass(pClass,"Me", CodeGeneration.Language.CSharp,CodeGeneration.Format.ASPX, ref messages));
             }
             return View(messages);
+        }
+
+        private DALClass getNewDAL(ProjectVariable nameSpace) {
+            ConnectionString readConn = new ConnectionString(1, "Reader", "db_reader");
+            ConnectionString editConn = new ConnectionString(2, "Editor", "db_editor");
+                        DALClass dal =  new DALClass();
+            dal.NameSpaceName = nameSpace;
+            dal.Name = "NewDAL";
+            dal.ReadOnlyConnectionString = readConn;
+            dal.EditOnlyConnectionstring = editConn;
+           
+            return dal;
         }
     }
 }

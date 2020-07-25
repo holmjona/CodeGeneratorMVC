@@ -388,14 +388,14 @@ public class ClassVariable  {
         return false;
     }
     public static bool operator ==(ClassVariable pv1, ClassVariable pv2) {
-        if (pv1 == null & pv2 == null)
+        if (ReferenceEquals(pv1,null) && ReferenceEquals(pv2, null))
             return true;
-        if (pv1 == null || pv2 == null)
+        if (ReferenceEquals(pv1, null) || ReferenceEquals(pv2, null))
             return false;
         return pv1.ID == pv2.ID;
     }
     public static bool operator !=(ClassVariable pv1, ClassVariable pv2) {
-        return pv1 != pv2;
+        return !(pv1 == pv2);
     }
     public string getVariableName() {
         if (!CodeGeneration.isRegularDataType(ParameterType.Name()))
