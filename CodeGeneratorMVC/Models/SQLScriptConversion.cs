@@ -1,16 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using Words;
-using System.Windows;
 using Microsoft.VisualBasic;
 using language = CodeGeneration.Language;
 
@@ -66,9 +56,11 @@ public class SQLScriptConversion {
 
 
     public static List<ProjectClass> generateObjects(string fileName, ref List<string> messages) {
-        System.IO.StreamReader myRead = System.IO.File.OpenText(fileName);
-
-        string myString = myRead.ReadToEnd();
+        string myString;
+        using (System.IO.StreamReader myRead = System.IO.File.OpenText(fileName)) {
+            myString = myRead.ReadToEnd();
+        }
+        
         // remove comments (--This is a sample comment)
         while (myString.IndexOf("--") > -1) {
             int count = myString.IndexOf(Constants.vbCrLf, myString.IndexOf("--")) - myString.IndexOf("--");
@@ -92,25 +84,29 @@ public class SQLScriptConversion {
             // for each line remove create table statement.
             myString = myString.Remove(0, myString.IndexOf("CREATE TABLE", StringComparison.OrdinalIgnoreCase));
             myString = myString.Remove(0, 12);
-            string extractedText = ExtractCreateTableStatement(myString);
-            ProjectClass projClass = ExtractProjectClass(ref extractedText, ID);
-            // If StaticVariables.Instance.DALs.Count > 0 Then
-            // pClass.DALClassVariable = StaticVariables.Instance.DALs(0)
-            // End If
-            // If StaticVariables.Instance.MasterPages.Count > 0 Then
-            // pClass.MasterPage = StaticVariables.Instance.MasterPages(0)
-            // End If
-            // pClass.BaseClass = StaticVariables.Instance.BaseClasses(0)
-            // If StaticVariables.Instance.NameSpaceNames.Count > 0 Then
-            // pClass.NameSpaceName = StaticVariables.Instance.NameSpaceNames(0)
-            // End If
+            try {
+                string extractedText = ExtractCreateTableStatement(myString);
+                ProjectClass projClass = ExtractProjectClass(ref extractedText, ID);
+                // If StaticVariables.Instance.DALs.Count > 0 Then
+                // pClass.DALClassVariable = StaticVariables.Instance.DALs(0)
+                // End If
+                // If StaticVariables.Instance.MasterPages.Count > 0 Then
+                // pClass.MasterPage = StaticVariables.Instance.MasterPages(0)
+                // End If
+                // pClass.BaseClass = StaticVariables.Instance.BaseClasses(0)
+                // If StaticVariables.Instance.NameSpaceNames.Count > 0 Then
+                // pClass.NameSpaceName = StaticVariables.Instance.NameSpaceNames(0)
+                // End If
 
-            // ' See if this is the Alias Group Table/Object
-            projClass.IsAssociatedWithAliasGroup = projClass.Name.Capitalized().ToLower().Contains("alias");
-            if (projClass.IsAssociatedWithAliasGroup)
-                pAliasGroupClass = projClass;
+                // ' See if this is the Alias Group Table/Object
+                projClass.IsAssociatedWithAliasGroup = projClass.Name.Capitalized().ToLower().Contains("alias");
+                if (projClass.IsAssociatedWithAliasGroup)
+                    pAliasGroupClass = projClass;
 
-            retList.Add(projClass);
+                retList.Add(projClass);
+            } catch (Exception ex) {
+                messages.Add(ex.Message);
+            }
             ID += 1;
         }
 
@@ -132,13 +128,14 @@ public class SQLScriptConversion {
             pClass = retList[i];
             doesVariableExist = false;
             int _ID = 1;
-                string[] textSplit = pClass.OriginalSQLText.Split(',');
-            for(int n = 0; n < textSplit.Length; n++) {
-            string variableSQLText = textSplit[n].Trim();
+            string[] textSplit = pClass.OriginalSQLText.Split(',');
+            for (int n = 0; n < textSplit.Length; n++) {
+                string variableSQLText = textSplit[n].Trim();
                 try {
                     ClassVariable newVar = ExtractClassVariable(ref pClass, ref variableSQLText, _ID);
-                    if (newVar != null)
+//                    if (newVar != null) {
                         pClass.ClassVariables.Add(newVar);
+                    //}
                 } catch (Exception ex) {
                     messages.Add(ex.Message);
                 }
@@ -146,7 +143,7 @@ public class SQLScriptConversion {
                 _ID += 1;
             }
             // create the alias group variable for this object.
-            ClassVariable myVariable = new ClassVariable(pAliasGroupClass, pClass.Name.Capitalized(), StaticVariables.Instance.GetDataType("namealias"), 
+            ClassVariable myVariable = new ClassVariable(pAliasGroupClass, pClass.Name.Capitalized(), StaticVariables.Instance.GetDataType("namealias"),
                 false, false, false, false, false, true, true, pAliasGroupClass.ClassVariables.Count, false, false, "String", -1, pClass.Name.Capitalized());
             // check to see if alias already exists
             foreach (ClassVariable cVariable in pAliasGroupClass.ClassVariables) {
@@ -384,7 +381,8 @@ public class SQLScriptConversion {
         string fieldName = parameters[0];
         string sqlType = parameters[1];
         bool isRequired = false;
-        if (containsValue(parameters, "not", Sensitivity.CaseInsensitive) && containsValue(parameters, "null", Sensitivity.CaseInsensitive))
+        if (containsValue(parameters, "not", Sensitivity.CaseInsensitive)
+            && containsValue(parameters, "null", Sensitivity.CaseInsensitive))
             isRequired = true;
         DataType dataType = null/* TODO Change to default(_) if this is not a reference type */;
         bool isInHerited = false;

@@ -1,4 +1,4 @@
-CREATE TABLE Rarites(
+CREATE TABLE Rarities(
   RarityID int IDENTITY(1,1) PRIMARY KEY
   ,Name nvarchar(50) NOT NULL
 )

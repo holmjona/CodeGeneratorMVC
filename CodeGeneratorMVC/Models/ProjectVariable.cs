@@ -45,17 +45,17 @@ public class ProjectVariable {
 
     public override bool Equals(object obj) {
         if (obj is ProjectVariable)
-            return this == (ProjectVariable)obj;
+            return ReferenceEquals(this,(ProjectVariable)obj);
         return false;
     }
     public static bool operator ==(ProjectVariable pv1, ProjectVariable pv2) {
-        if (pv1 == null & pv2 == null)
+        if (ReferenceEquals(pv1,null) & ReferenceEquals(pv2,null))
             return true;
-        if (pv1 == null || pv2 == null)
+        if (ReferenceEquals(pv1, null) || ReferenceEquals(pv2, null))
             return false;
         return pv1.ID == pv2.ID;
     }
     public static bool operator !=(ProjectVariable pv1, ProjectVariable pv2) {
-        return pv1 != pv2;
+        return !(pv1 == pv2);
     }
 }

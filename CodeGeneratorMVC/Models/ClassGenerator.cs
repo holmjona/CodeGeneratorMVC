@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualBasic;
-using System.Drawing;
 using cg = CodeGeneration;
 using language = CodeGeneration.Language;
 using tab = CodeGeneration.Tabs;
-using System.Net.NetworkInformation;
 
 public class ClassGenerator {
     public static string getDataReaderText(ProjectClass pClass, bool overridesBase, language lang) {

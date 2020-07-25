@@ -17,9 +17,13 @@ namespace CodeGeneratorMVC.Controllers {
             string fPath = Path.GetFullPath("Uploads")+ "\\" + fupFile.FileName;
             using (FileStream fs = new FileStream(fPath , FileMode.Create)) {
                 fupFile.CopyTo(fs);
+                fs.Close();
             }
             List<string> messages = new List<string>();
             List<ProjectClass> classes = SQLScriptConversion.generateObjects(fPath,ref messages);
+            foreach(ProjectClass pClass in classes) {
+                messages.Add(ClassGenerator.getEntireClass(pClass,"Me", CodeGeneration.Language.CSharp,CodeGeneration.Format.ASPX, ref messages));
+            }
             return View(messages);
         }
     }

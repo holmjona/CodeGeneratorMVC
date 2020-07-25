@@ -1,15 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using language = CodeGeneration.Language;
@@ -338,10 +329,15 @@ public class StaticVariables {
         // End If
         if (GetDataType(typeName) != null) {
             if (_CSharpPrimitivesMap.ContainsKey(typeName))
-                return _CSharpPrimitivesMap[typeName];
+                return getCSharpPrimitiveTypeName(typeName);
         }
         return typeName;
     }
+
+    public string getCSharpPrimitiveTypeName(string typeName) {
+        return _CSharpPrimitivesMap[typeName];
+    }
+
     public string NeededFile(string key) {
         if (_dictOfKnownFiles.ContainsKey(key))
             return _dictOfKnownFiles[key];

@@ -1,15 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 using System.ComponentModel;
 using Words;
 
@@ -22,7 +12,7 @@ public class ProjectClass {//: INotifyPropertyChanged {
     private BindingList<ClassVariable> _ClassVariables = new BindingList<ClassVariable>();
     private List<ProjectClass> _AssociatedClasses;
     private int _ID;
-    private ProjectVariable _NameSpaceVariable;
+    private ProjectVariable _NameSpaceVariable = null;
     private DALClass _DALClassVariable;
     private string _Summary = "";
     private ProjectVariable _BaseClass;
