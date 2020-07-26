@@ -16,7 +16,8 @@ namespace CodeGeneratorMVC.Controllers {
         }
 
         public IActionResult Index() {
-            return View();
+            Project newProject = new Project() { Key = Hasher.getRandomKey() };
+            return View(newProject);
         }
 
         public IActionResult Privacy() {

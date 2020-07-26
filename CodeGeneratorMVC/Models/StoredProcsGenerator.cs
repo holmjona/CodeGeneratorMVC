@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 
-public class SPGenerator {
+public class StoredProcsGenerator {
     const int tabSize = 5;
     public static string getSprocText(ProjectClass pClass, string creatorName, ref List<string> messages) {
         StringBuilder strB = new StringBuilder();

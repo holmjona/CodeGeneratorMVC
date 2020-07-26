@@ -90,7 +90,7 @@ public class DALGenerator {
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim comm As New SqlCommand(\"" + sprocName + "\")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim retList As New List(Of " + pClass.Name.Capitalized() + ")");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "Try");
-            strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure");
+            strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "Dim dr As SqlDataReader = GetDataReader(comm)");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "While dr.Read()");
             strB.AppendLine(Strings.Space((int)tab.XXXXX) + "retList.Add(New " + pClass.Name.Capitalized() + "(dr))");
@@ -108,7 +108,7 @@ public class DALGenerator {
             strB.AppendLine(Strings.Space((int)tab.XXX) + "List<" + pClass.Name.Capitalized() + "> retList = new List<" + pClass.Name.Capitalized() + ">();");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "try");
             strB.AppendLine(Strings.Space((int)tab.XXX) + "{");
-            strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure;");
+            strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure;");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "SqlDataReader dr = GetDataReader(comm);");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "while (dr.Read())");
             strB.AppendLine(Strings.Space((int)tab.XXXX) + "{");
@@ -161,7 +161,7 @@ public class DALGenerator {
                 retStr.AppendLine(Strings.Space((int)tab.XXX) + "List<" + pClass.Name.Capitalized() + "> retList = new List<" + pClass.Name.Capitalized() + ">()");
                 retStr.AppendLine(Strings.Space((int)tab.XXX) + "try");
                 retStr.AppendLine(Strings.Space((int)tab.XXX) + "{");
-                retStr.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure;");
+                retStr.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure;");
                 // retStr.AppendLine(Strings.Space((int)tab.XXXX) & "comm.Parameters.AddWithValue(""@"" + " & assProjClass.Name.Capitalized() & ".db_ID, obj.ID);")
                 retStr.AppendLine(Strings.Space((int)tab.XXXX) + getParaString(lang, assProjClass, "ID", "obj.ID"));
                 retStr.AppendLine(Strings.Space((int)tab.XXXX) + "SqlDataReader dr = GetDataReader(comm);");
@@ -512,7 +512,7 @@ public class DALGenerator {
         strB.AppendLine(Strings.Space((int)tab.XXX) + "Dim retInt As Integer = 0");
         strB.AppendLine(Strings.Space((int)tab.XXX) + "Try");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection = New SqlConnection(EditOnlyConnectionString)");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection.Open()");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "Dim retParameter As SqlParameter");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "retParameter = comm.Parameters.Add(parameterName, Data.SqlDbType.Int)");
@@ -575,7 +575,7 @@ public class DALGenerator {
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "else");
         strB.AppendLine(Strings.Space((int)tab.XXXXX) + "comm.Connection = new SqlConnection(ReadOnlyConnectionString);");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure;");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure;");
         strB.AppendLine(Strings.Space((int)tab.XXX) + "}catch(Exception ex){}");
         strB.AppendLine(Strings.Space((int)tab.XX) + "}");
         strB.AppendLine(Strings.Space((int)tab.XX) + "public static SqlDataReader GetDataReader(SqlCommand comm)");
@@ -603,11 +603,11 @@ public class DALGenerator {
         strB.AppendLine(Strings.Space((int)tab.XXX) + "try");
         strB.AppendLine(Strings.Space((int)tab.XXX) + "{");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection = new SqlConnection(EditOnlyConnectionString);");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure;");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure;");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection.Open();");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "SqlParameter retParameter;");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "retParameter = comm.Parameters.Add(parameterName, System.Data.SqlDbType.Int);");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "retParameter.Direction = System.Data.ParameterDirection.Output;");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "retParameter = comm.Parameters.Add(parameterName, Microsoft.Data.SqlDbType.Int);");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "retParameter.Direction = Microsoft.Data.ParameterDirection.Output;");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.ExecuteNonQuery();");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "retInt = (int)retParameter.Value;");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection.Close();");
@@ -642,7 +642,7 @@ public class DALGenerator {
         strB.AppendLine(Strings.Space((int)tab.XXX) + "try");
         strB.AppendLine(Strings.Space((int)tab.XXX) + "{");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection = new SqlConnection(EditOnlyConnectionString);");
-        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = System.Data.CommandType.StoredProcedure;");
+        strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.CommandType = Microsoft.Data.CommandType.StoredProcedure;");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection.Open();");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "retInt = comm.ExecuteNonQuery();");
         strB.AppendLine(Strings.Space((int)tab.XXXX) + "comm.Connection.Close();");

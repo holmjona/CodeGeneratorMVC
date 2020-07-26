@@ -51,7 +51,7 @@ public abstract class DatabaseRecord {
     /// <summary>
 	/// 	''' This function is called by the Security DAL to load this object from the database
 	/// 	''' </summary>
-    public abstract void Fill(System.Data.SqlClient.SqlDataReader dr);
+    public abstract void Fill(Microsoft.Data.SqlClient.SqlDataReader dr);
 
     public static bool operator ==(DatabaseRecord r1, DatabaseRecord r2) {
         if (ReferenceEquals(r1, null) && ReferenceEquals(r2, null))

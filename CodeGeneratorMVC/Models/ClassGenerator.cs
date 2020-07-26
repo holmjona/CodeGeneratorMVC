@@ -48,7 +48,7 @@ public class ClassGenerator {
         StringBuilder retStrB = new StringBuilder();
         if (pClass.Name.Text().Length > 0) {
             retStrB.Append(cg.getMetaDataText("Fills object from a SqlClient Data Reader", false, (int)tab.XX, language.CSharp));
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "void Fill(System.Data.SqlClient.SqlDataReader dr)");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + (overridesBase? "override ": "") + "void Fill(Microsoft.Data.SqlClient.SqlDataReader dr)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             foreach (ClassVariable classVar in pClass.ClassVariables) {
                 if (classVar.IsAssociative)
@@ -166,14 +166,14 @@ public class ClassGenerator {
         if (lang == language.VisualBasic) {
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "Public Sub New()");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "End Sub");
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Friend Sub New(ByVal dr As System.Data.SqlClient.SqlDataReader)");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "Friend Sub New(ByVal dr As Microsoft.Data.SqlClient.SqlDataReader)");
             retStrB.AppendLine(Strings.Space((int)tab.XXX) + "Fill(dr)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "End Sub");
         } else {
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "public " + objName + "()");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "}");
-            retStrB.AppendLine(Strings.Space((int)tab.XX) + "internal " + objName + "(System.Data.SqlClient.SqlDataReader dr)");
+            retStrB.AppendLine(Strings.Space((int)tab.XX) + "internal " + objName + "(Microsoft.Data.SqlClient.SqlDataReader dr)");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "{");
             retStrB.AppendLine(Strings.Space((int)tab.XXX) + "Fill(dr);");
             retStrB.AppendLine(Strings.Space((int)tab.XX) + "}");

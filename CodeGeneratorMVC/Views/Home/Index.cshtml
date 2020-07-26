@@ -1,11 +1,12 @@
-﻿@{
+﻿@model Project
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-    @using (Html.BeginForm("Upload","File",FormMethod.Post,new {enctype="multipart/form-data" })) {
+    @using (Html.BeginForm(Model.Key,"Upload",FormMethod.Post,new {enctype="multipart/form-data" })) {
         <input type="file" id="fupFile" name="fupFile" />
         <input type="submit" value="Upload SQL file" />
     }

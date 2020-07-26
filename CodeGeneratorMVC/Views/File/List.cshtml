@@ -12,7 +12,7 @@
     @foreach (ProjectFile pf in Model.Files) {
         <tr>
             <td>@pf.Name</td>
-            <td><a href="Download/?file=@pf.DownloadPath" >Download</a></td>
+            <td><a href="../File/Download/?file=@pf.DownloadPath" >Download</a></td>
         </tr>
     }
 </table>

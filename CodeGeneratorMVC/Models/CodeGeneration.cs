@@ -156,7 +156,7 @@ public class CodeGeneration {
             if (includeWebUI)
                 strB.AppendLine("Imports System.Web.UI");
             if (includeSQL)
-                strB.AppendLine("Imports System.Data.SqlClient");
+                strB.AppendLine("Imports Microsoft.Data.SqlClient");
             if (includeSystemConfig)
                 strB.AppendLine("Imports System.Configuration");
             foreach (ProjectVariable nsp in StaticVariables.Instance.NameSpaceNames)
@@ -170,7 +170,7 @@ public class CodeGeneration {
                 strB.AppendLine("using System.Web.UI;");
             strB.AppendLine("using IRICommonObjects.Tools;");
             if (includeSQL)
-                strB.AppendLine("using System.Data.SqlClient;");
+                strB.AppendLine("using Microsoft.Data.SqlClient;");
             if (includeSystemConfig)
                 strB.AppendLine("using System.Configuration;");
             foreach (ProjectVariable nsp in StaticVariables.Instance.NameSpaceNames)
