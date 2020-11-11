@@ -46,12 +46,15 @@ namespace CodeGeneratorMVC.Controllers {
                 using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\" + fileName, false)) {
                     sw.Write(classContent);
                 }
+                
                 thisFiles.Add(new ProjectFile() {
                     Name = fileName, PhysicalPath = saveFolderPath + @"\",
                     Project = thisProject
                 });
 
-                //sprocScripts.Append(StoredProcsGenerator.getAddSprocText(pClass));
+                pClass.ClassVariables
+
+                sprocScripts.Append(StoredProcsGenerator.getSprocText(pClass,"Me",ref messages));
             }
 
             //TODO: Not doing Sprocs yet, Still need to figure out how to get them to work.

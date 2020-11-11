@@ -43,7 +43,11 @@ public class ClassVariable  {
     private string _DatabaseColumnName = "";
     private ClassVariable() {
     }
-    public ClassVariable(ProjectClass pClass, string Name, DataType parameterType, bool isForeignKeyField, bool isAssociativeField, bool list, bool isID, bool PropertyInherited, bool DisplayOnEdit, bool DisplayOnView, int NewID, bool IsClassVariableDatabaseBound, bool isRequired, string ClassVariableDatabaseType, int ClassVariableLengthOfDatabaseProperty, string DatabaseColumnName) : base() {
+    public ClassVariable(ProjectClass pClass, string Name, DataType parameterType, bool isForeignKeyField, 
+                        bool isAssociativeField, bool list, bool isID, bool PropertyInherited, 
+                        bool DisplayOnEdit, bool DisplayOnView, int NewID, bool IsClassVariableDatabaseBound, 
+                        bool isRequired, string ClassVariableDatabaseType, int ClassVariableLengthOfDatabaseProperty, 
+                        string DatabaseColumnName) : base() {
         _ParentClass = pClass;
         _ID = NewID;
         _IsIDField = isID;

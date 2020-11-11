@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Words;
 
 [Serializable()]
@@ -208,8 +209,17 @@ public class ProjectClass {//: INotifyPropertyChanged {
             this.NotifyPropertyChanged("TextProperty");
         }
     }
+    /// <summary>
+    /// Get the field which will be used to identify this object.
+    /// </summary>
     public ClassVariable ValueVariable {
         get {
+            if (_ValueProperty == null) { // no value property set
+                _ValueProperty = ClassVariables.FirstOrDefault(cv => cv.IsIDField);
+            }
+            if (_ValueProperty == null) { // no id filed found
+                _ValueProperty = ClassVariables[0]; // just use first variable.
+            }
             return _ValueProperty;
         }
         set {
