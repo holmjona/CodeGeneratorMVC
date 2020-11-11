@@ -423,7 +423,7 @@ public class DALGenerator {
         return strB.ToString();
     }
 
-    public static string getDALSkeleton(string readOnlyString, string editOnlySTring, DALClass pVariable, cg.Language lang) {
+    public static string getDALText(string readOnlyString, string editOnlySTring, DALClass pVariable, StringBuilder strFunctions, cg.Language lang) {
         StringBuilder strB = new StringBuilder();
         strB.Append(cg.getPageImports(lang, true, true));
         if (lang == CodeGeneration.Language.VisualBasic) {
@@ -439,6 +439,7 @@ public class DALGenerator {
             strB.AppendLine(Strings.Space((int)tab.X) + "End Sub");
             strB.AppendLine(getEnums(lang));
             strB.AppendLine(getDBConnectFunctionsInVB());
+            strB.AppendLine(strFunctions.ToString());
             strB.AppendLine(Strings.Space((int)tab.X) + "End Class");
             strB.AppendLine("End NameSpace");
         } else {
@@ -454,6 +455,7 @@ public class DALGenerator {
             strB.AppendLine(Strings.Space((int)tab.XX) + "}");
             strB.AppendLine(getEnums(lang));
             strB.AppendLine(getDBConnectFunctionsInCSharp());
+            strB.AppendLine(strFunctions.ToString());
             strB.AppendLine(Strings.Space((int)tab.X) + "}");
             strB.AppendLine("}");
         }

@@ -19,6 +19,7 @@ namespace CodeGeneratorMVC.Controllers {
             List<ProjectFile> thisFiles = new List<ProjectFile>();
             string uploadFolder = Path.GetFullPath("Uploads") + "\\" + uniquekey + "\\";
             string filePath = uploadFolder + fupFile.FileName;
+            string nameSpaceName = getCleanNameSpace(fupFile.FileName);
             // create directory for upload
             Directory.CreateDirectory(uploadFolder);
             // 
@@ -30,13 +31,15 @@ namespace CodeGeneratorMVC.Controllers {
             }
             List<string> messages = new List<string>();
             List<ProjectClass> classes = SQLScriptConversion.generateObjects(filePath, ref messages);
-            ProjectVariable nameSpaceObject = new ProjectVariable(1, "CodeGeneratorObjects");
+            ProjectVariable nameSpaceObject = new ProjectVariable(1, nameSpaceName);
             DALClass dalClassObject = getNewDAL(nameSpaceObject);
             if (!Directory.Exists(saveFolderPath)) {
                 // no directory; create it
                 Directory.CreateDirectory(saveFolderPath);
             }
             StringBuilder sprocScripts = new StringBuilder();
+            StringBuilder dalFunctions = new StringBuilder();
+
             foreach (ProjectClass pClass in classes) {
                 String fileName = pClass.Name.Capitalized() + ".cs";
                 pClass.DALClassVariable = dalClassObject;
@@ -46,25 +49,37 @@ namespace CodeGeneratorMVC.Controllers {
                 using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\" + fileName, false)) {
                     sw.Write(classContent);
                 }
-                
+
                 thisFiles.Add(new ProjectFile() {
                     Name = fileName, PhysicalPath = saveFolderPath + @"\",
                     Project = thisProject
                 });
 
-                pClass.ClassVariables
-
-                sprocScripts.Append(StoredProcsGenerator.getSprocText(pClass,"Me",ref messages));
+                sprocScripts.Append(StoredProcsGenerator.getSprocText(pClass, "Me", ref messages));
+                dalFunctions.Append(DALGenerator.getDALFunctions(pClass, CodeGeneration.Language.CSharp));
             }
 
-            //TODO: Not doing Sprocs yet, Still need to figure out how to get them to work.
-            //using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\StoredProcedures.sql", false)) {
-            //    sw.Write(sprocScripts.ToString());
-            //    thisFiles.Add(new ProjectFile() {
-            //        Name = "StoredProcedures.sql", PhysicalPath = saveFolderPath + @"\",
-            //        Project = thisProject
-            //    });
-            //}
+            // Save SProcs file
+            string sprocFileName = "StoredProcedures.sql";
+            using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\"+sprocFileName, false)) {
+                sw.Write(sprocScripts.ToString());
+                thisFiles.Add(new ProjectFile() {
+                    Name = sprocFileName, PhysicalPath = saveFolderPath + @"\",
+                    Project = thisProject
+                });
+            }
+
+            // Save DAL file
+            string dalContent = DALGenerator.getDALText("", "", dalClassObject, dalFunctions, CodeGeneration.Language.CSharp);
+            string dalFileName = dalClassObject.Name + ".cs";
+            using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\"+ dalFileName , false)) {
+                sw.Write(dalContent);
+                thisFiles.Add(new ProjectFile() {
+                    Name = dalFileName, PhysicalPath = saveFolderPath + @"\",
+                    Project = thisProject
+                });
+            }
+
 
             thisProject.Files = thisFiles;
             thisProject.ConversionMessages = messages;
@@ -78,12 +93,32 @@ namespace CodeGeneratorMVC.Controllers {
             return RedirectToAction("List", new { uniquekey = thisProject.Key });
         }
 
+        private string getCleanNameSpace(string fileName) {
+            // remove extension if exists
+            string retName = System.IO.Path.GetFileNameWithoutExtension(fileName);
+            retName = retName.Replace(' ', '_'); // remove spaces
+            retName = retName.Replace('-', '_'); // remove hyphens
+            retName = retName.Replace('.', '_'); // remove periods
+            int tempInt = 0;
+            if (int.TryParse(retName[0].ToString(), out tempInt)) {
+                // first char is an number
+                retName = "_" + retName;
+            }
+            while (retName.Contains("__")) {
+                // ignore first char
+                retName = retName.Replace("__", "_");
+            }
+
+
+            return retName;
+        }
+
         private DALClass getNewDAL(ProjectVariable nameSpace) {
             ConnectionString readConn = new ConnectionString(1, "Reader", "db_reader");
             ConnectionString editConn = new ConnectionString(2, "Editor", "db_editor");
             DALClass dal = new DALClass();
             dal.NameSpaceName = nameSpace;
-            dal.Name = "NewDAL";
+            dal.Name = nameSpace + "DAL";
             dal.ReadOnlyConnectionString = readConn;
             dal.EditOnlyConnectionstring = editConn;
 
@@ -94,7 +129,7 @@ namespace CodeGeneratorMVC.Controllers {
             Project myProject = null;
             if (TempData["CurrentProject"] != null) {
                 myProject = Newtonsoft.Json.JsonConvert.DeserializeObject<Project>(TempData["CurrentProject"].ToString());
-                foreach(ProjectFile pf in myProject.Files) {
+                foreach (ProjectFile pf in myProject.Files) {
                     pf.Project = myProject;
                 }
             } else {
@@ -117,7 +152,7 @@ namespace CodeGeneratorMVC.Controllers {
                     }
                 } else {
                     // project does not exist.
-                    return RedirectToAction("Index","Home");
+                    return RedirectToAction("Index", "Home");
                 }
             }
 
