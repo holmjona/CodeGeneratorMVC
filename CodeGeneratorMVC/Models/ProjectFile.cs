@@ -31,7 +31,8 @@ public class ProjectFile {
             return downPath;
         }
     }
-
+    [System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public Project Project {
         get { return _Project; }
         set { _Project = value; }

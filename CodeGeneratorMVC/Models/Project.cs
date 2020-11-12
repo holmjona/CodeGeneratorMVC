@@ -6,6 +6,17 @@ using System.Threading.Tasks;
 public class Project {
     private string _Key;
     private List<ProjectFile> _Files;
+    private List<String> _ConversionMessages;
+    private long _LinesGenerated;
+    private TimeSpan _TimeTaken;
+
+    public TimeSpan TimeTaken {
+        get { return _TimeTaken; }
+        set { _TimeTaken = value; }
+    }
+
+
+
 
     public string Key {
         get { return _Key; }
@@ -21,7 +32,6 @@ public class Project {
         set { _Files = value; }
     }
 
-    private List<String> _ConversionMessages;
 
     public List<String> ConversionMessages {
         get {
@@ -29,6 +39,11 @@ public class Project {
             return _ConversionMessages;
         }
         set { _ConversionMessages = value; }
+    }
+
+    public long LinesGenerated {
+        get { return _LinesGenerated; }
+        set { _LinesGenerated = value; }
     }
 
 

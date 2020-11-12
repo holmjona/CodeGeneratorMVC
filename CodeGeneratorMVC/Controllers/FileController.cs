@@ -14,7 +14,7 @@ namespace CodeGeneratorMVC.Controllers {
         }
 
         [HttpPost]
-        public IActionResult Upload(IFormFile fupFile,string name, string uniquekey) {
+        public IActionResult Upload(IFormFile fupFile, string uniquekey) {
             Project thisProject = new Project() { Key = uniquekey };
             List<ProjectFile> thisFiles = new List<ProjectFile>();
             string uploadFolder = Path.GetFullPath("Uploads") + "\\" + uniquekey + "\\";
@@ -32,6 +32,7 @@ namespace CodeGeneratorMVC.Controllers {
             List<string> messages = new List<string>();
             List<ProjectClass> classes = SQLScriptConversion.generateObjects(filePath, ref messages);
             ProjectVariable nameSpaceObject = new ProjectVariable(1, nameSpaceName);
+            StaticVariables.Instance.NameSpaceNames.Append(nameSpaceObject);
             DALClass dalClassObject = getNewDAL(nameSpaceObject);
             if (!Directory.Exists(saveFolderPath)) {
                 // no directory; create it
@@ -47,6 +48,7 @@ namespace CodeGeneratorMVC.Controllers {
                 string classContent = ClassGenerator.getEntireClass(pClass, name, CodeGeneration.Language.CSharp, CodeGeneration.Format.ASPX, ref messages);
                 // save file to project folder. 
                 using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\" + fileName, false)) {
+                    lineCreated += classContent.Count('\n');
                     sw.Write(classContent);
                 }
 
@@ -62,7 +64,9 @@ namespace CodeGeneratorMVC.Controllers {
             // Save SProcs file
             string sprocFileName = "StoredProcedures.sql";
             using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\"+sprocFileName, false)) {
-                sw.Write(sprocScripts.ToString());
+                string sprocString = sprocScripts.ToString();
+                lineCreated += sprocString.Count('\n');
+                sw.Write(sprocString);
                 thisFiles.Add(new ProjectFile() {
                     Name = sprocFileName, PhysicalPath = saveFolderPath + @"\",
                     Project = thisProject
@@ -73,6 +77,7 @@ namespace CodeGeneratorMVC.Controllers {
             string dalContent = DALGenerator.getDALText("ReadOnlyConnectionString", "EditOnlyConnectionString", dalClassObject, dalFunctions, CodeGeneration.Language.CSharp);
             string dalFileName = dalClassObject.Name + ".cs";
             using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\"+ dalFileName , false)) {
+                lineCreated += dalContent.Count('\n');
                 sw.Write(dalContent);
                 thisFiles.Add(new ProjectFile() {
                     Name = dalFileName, PhysicalPath = saveFolderPath + @"\",
@@ -80,9 +85,17 @@ namespace CodeGeneratorMVC.Controllers {
                 });
             }
 
+            TimeSpan timeTaken = DateTime.Now - startImport;
 
             thisProject.Files = thisFiles;
             thisProject.ConversionMessages = messages;
+            thisProject.LinesGenerated = lineCreated;
+            thisProject.TimeTaken = timeTaken;
+            string projName = nameSpaceName + ".proj";
+            using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\" + projName, false)) {
+                string projJSON = System.Text.Json.JsonSerializer.Serialize(thisProject);
+                sw.Write(projJSON);
+            }
             //return View(thisProject);
 
             //https://stackoverflow.com/questions/13510204/json-net-self-referencing-loop-detected
