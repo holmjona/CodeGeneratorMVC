@@ -14,9 +14,16 @@ namespace CodeGeneratorMVC.Controllers {
         }
 
         [HttpPost]
-        public IActionResult Upload(IFormFile fupFile, string uniquekey) {
+        public IActionResult Upload(IFormFile fupFile, string name, string uniquekey) {
+            // Import Stats
+            DateTime startImport = DateTime.Now;
+            long lineCreated = 0;
+            // end stats
+
+
             Project thisProject = new Project() { Key = uniquekey };
             List<ProjectFile> thisFiles = new List<ProjectFile>();
+
             string uploadFolder = Path.GetFullPath("Uploads") + "\\" + uniquekey + "\\";
             string filePath = uploadFolder + fupFile.FileName;
             string nameSpaceName = getCleanNameSpace(fupFile.FileName);
