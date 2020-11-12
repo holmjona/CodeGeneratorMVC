@@ -14,7 +14,7 @@ namespace CodeGeneratorMVC.Controllers {
         }
 
         [HttpPost]
-        public IActionResult Upload(IFormFile fupFile, string uniquekey) {
+        public IActionResult Upload(IFormFile fupFile,string name, string uniquekey) {
             Project thisProject = new Project() { Key = uniquekey };
             List<ProjectFile> thisFiles = new List<ProjectFile>();
             string uploadFolder = Path.GetFullPath("Uploads") + "\\" + uniquekey + "\\";
@@ -44,7 +44,7 @@ namespace CodeGeneratorMVC.Controllers {
                 String fileName = pClass.Name.Capitalized() + ".cs";
                 pClass.DALClassVariable = dalClassObject;
                 pClass.NameSpaceVariable = nameSpaceObject;
-                string classContent = ClassGenerator.getEntireClass(pClass, "Me", CodeGeneration.Language.CSharp, CodeGeneration.Format.ASPX, ref messages);
+                string classContent = ClassGenerator.getEntireClass(pClass, name, CodeGeneration.Language.CSharp, CodeGeneration.Format.ASPX, ref messages);
                 // save file to project folder. 
                 using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\" + fileName, false)) {
                     sw.Write(classContent);
@@ -55,7 +55,7 @@ namespace CodeGeneratorMVC.Controllers {
                     Project = thisProject
                 });
 
-                sprocScripts.Append(StoredProcsGenerator.getSprocText(pClass, "Me", ref messages));
+                sprocScripts.Append(StoredProcsGenerator.getSprocText(pClass, name, ref messages));
                 dalFunctions.Append(DALGenerator.getDALFunctions(pClass, CodeGeneration.Language.CSharp));
             }
 
@@ -70,7 +70,7 @@ namespace CodeGeneratorMVC.Controllers {
             }
 
             // Save DAL file
-            string dalContent = DALGenerator.getDALText("", "", dalClassObject, dalFunctions, CodeGeneration.Language.CSharp);
+            string dalContent = DALGenerator.getDALText("ReadOnlyConnectionString", "EditOnlyConnectionString", dalClassObject, dalFunctions, CodeGeneration.Language.CSharp);
             string dalFileName = dalClassObject.Name + ".cs";
             using (StreamWriter sw = new StreamWriter(saveFolderPath + @"\"+ dalFileName , false)) {
                 sw.Write(dalContent);

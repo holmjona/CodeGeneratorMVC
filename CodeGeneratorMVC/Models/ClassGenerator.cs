@@ -191,8 +191,11 @@ public class ClassGenerator {
         string objName = pClass.Name.Capitalized();
         if (objName.Length > 0 & dalClassName.Length > 0) {
             if (objName.Length > 0) {
-                retStrB.Append(cg.GetByLanguage(lang, getEntireClassInVB(pClass, objName, namSpace, Comments, creator, codeFormat),
-                    getEntireClassInCSharp(pClass, objName, namSpace, Comments, creator, codeFormat)));
+                retStrB.Append(cg.GetByLanguage(lang, 
+                    getEntireClassInVB(pClass, objName, namSpace, Comments, creator, codeFormat),
+                    getEntireClassInCSharp(pClass, objName, namSpace, Comments, creator, codeFormat)
+                    )
+                );
             }
         } else {
             if (pClass.Name.Text().Length == 0)
